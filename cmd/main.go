@@ -1,3 +1,9 @@
 package main
 
-func main() {}
+import (
+	internal "forum/internal"
+)
+
+func main() {
+	internal.Serve()
+}
