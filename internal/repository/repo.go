@@ -1,10 +1,11 @@
 package repository
 
-func Insert(interface{}) {
+type CRUD interface {
+	Insert(interface{}) (int64, error)
+
+	Delete(interface{}) error
+
+	Update(interface{}) error
+
+	Get(interface{}) error
 }
-
-func Delete(interface{}) {}
-
-func Update(interface{}) {}
-
-func Get(interface{}) {}
