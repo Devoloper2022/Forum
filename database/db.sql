@@ -25,3 +25,4 @@ CREATE TABLE Commet (
 	UserID numeric,
 	PostID numeric
 );
+
