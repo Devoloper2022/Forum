@@ -1,1 +1,3 @@
-package models
+package internal
+
+type CategoryPost struct{}

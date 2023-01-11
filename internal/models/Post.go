@@ -1,4 +1,4 @@
-package models
+package internal
 
 import "time"
 
@@ -10,7 +10,6 @@ type Post struct {
 	UserId  int64     `json:"userId"`
 	Likes   int64     `json:"likes"`
 	Dislike int64     `json:"dislike"`
-
 	// Categorys []Category `json:"category"`
 	// Comments  []Comment  `json:"comments"`
 }

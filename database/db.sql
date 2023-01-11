@@ -1,11 +1,11 @@
-CREATE TABLE User (
+CREATE TABLE IF NOT EXISTS User (
 	ID numeric PRIMARY KEY AUTOINCREMENT,
 	username varchar,
 	password text,
 	email text
 );
 
-CREATE TABLE Post (
+CREATE TABLE IF NOT EXISTS Post (
 	ID numeric PRIMARY KEY AUTOINCREMENT,
 	title varchar,
 	text text,

@@ -1,11 +1,15 @@
 package repository
 
-type CRUD interface {
-	Insert(interface{}) (int64, error)
+import (
+	"database/sql"
+)
 
-	Delete(interface{}) error
+type Repo struct {
+	DB *sql.DB
+}
 
-	Update(interface{}) error
-
-	Get(interface{}) error
+func NewRepository(db *sql.DB) *Repo {
+	return &Repo{
+		DB: db,
+	}
 }
