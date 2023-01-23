@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 type Config struct {
@@ -101,10 +100,9 @@ func CreateTables(db *sql.DB) error {
 	for _, table := range allTables {
 		_, err := db.Exec(table)
 		if err != nil {
-			fmt.Printf("crete start %s", table)
 			return err
 		}
 	}
-	fmt.Println("crete end ")
+
 	return nil
 }

@@ -2,18 +2,41 @@ package http
 
 import (
 	"fmt"
+	"forum/internal/models"
+	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 )
 
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
-	// if r.Method != http.MethodPost {
-	// 	w.Header().Set("Allow", http.MethodPost)
-	// 	h.clientError(w, http.StatusMethodNotAllowed)
-	// 	return
-	// }
+	if r.Method == "GET" {
+		ts, err := template.ParseFiles("./ui/templates/post/createPost.html")
+		if err != nil {
+			log.Printf("Create Post: Execute:%v", err)
+			return
+		}
 
-	w.Write([]byte("CreatePost page"))
+		err = ts.Execute(w, nil)
+		if err != nil {
+			log.Println(err.Error())
+			return
+		}
+	} else if r.Method == "POST" {
+
+		title := "История про улитку"
+		content := "Улитка выползла из ."
+		var userID int64 = 60
+
+		id, err := h.services.CreatePost(models.Post{Title: title, Text: content, UserID: userID})
+		if err != nil {
+			h.serverError(w, err)
+			return
+		}
+
+		http.Redirect(w, r, fmt.Sprintf("/", id), http.StatusSeeOther)
+		w.Write([]byte("CreatePost page"))
+	}
 }
 
 func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {

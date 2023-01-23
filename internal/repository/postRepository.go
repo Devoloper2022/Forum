@@ -17,7 +17,7 @@ type Post interface {
 }
 
 func (r *Database) CreatePost(post models.Post) (int, error) {
-	com := ("INSERT INTO posts (Title,Content,UserId) VALUES (?,?,?)")
+	com := ("INSERT INTO posts (Title,Text,UserId) VALUES (?,?,?)")
 	query, err := r.db.Prepare(com)
 	if err != nil {
 		return 0, fmt.Errorf("repository : create post : %w", err)
