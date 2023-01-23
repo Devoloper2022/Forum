@@ -1,7 +1,7 @@
 package main
 
 import (
-	internal "forum/internal"
+	internal "forum/internal/server"
 )
 
 func main() {
