@@ -9,7 +9,7 @@
 </head>
 <body>
 
-    <h1>all Post</h1>
+    <h1>Create a New Post</h1>
     <form method="POST" action="/post/create">
         <label for="title"><b>Title</b></label><br>
         <input type="text" name="title"><br>
@@ -25,12 +25,7 @@
         <button type="submit">Create</button> 
     </form>
 
-
-    <h1>all Post</h1>
-    {{range .  }}
-    <option value="{{.ID}}">{{.Title}}</option>
-    {{end}}
-
+    <div></div>
 
 
 

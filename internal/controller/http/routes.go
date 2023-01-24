@@ -6,40 +6,45 @@ import (
 
 const (
 	// general
-	home = "/"
+	urlHome = "/"
 
 	// auth
-	signIn  = "/signin"
-	signUP  = "/signup"
-	refresh = "/refresh"
-	// Logout  = ""
+	urlSignIn  = "/signin"
+	urlSignUP  = "/signup"
+	urlRefresh = "/refresh"
+	urlLogout  = ""
 
 	// post
-	createPost = "/post/create"
-	deletePost = "/post/delete"
-	updatePost = "/post/update"
-	post       = "/post/"
-	posts      = "/post/all"
+	urlPostCreate = "/post/create"
+	urlPostDelete = "/post/delete"
+	urlPostUpdate = "/post/update"
+	urlPost       = "/post/"
+	urlPosts      = "/post/all"
 
 	// user
-	user = "/user/"
+	urlUser        = "/user/"
+	urlUserProfile = "/profile"
+	urlUserUpdate  = "/user/update"
+	urlUserDelete  = "/user/delete"
 
 	// comment
-	createComment = "/comment/create"
-	deleteComment = "/comment/delete"
-	comment       = "/comment"
+	urlCommentCreate = "/comment/create"
+	urlCommentDelete = "/comment/delete"
+	urlCommentUpdate = "/comment/update "
+	urlComment       = "/comment/"
+	urlComments      = "/comment/all"
 )
 
 func (h *Handler) Routes() *http.ServeMux {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc(home, h.Home)
+	mux.HandleFunc(urlHome, h.Home)
 	// post
-	mux.HandleFunc(post, h.CreatePost)
-	mux.HandleFunc(posts, h.ListPosts)
-	mux.HandleFunc(createPost, h.CreatePost)
-	mux.HandleFunc(deletePost, h.DeletePost)
-	mux.HandleFunc(updatePost, h.UpdatePost)
+	mux.HandleFunc(urlPost, h.GetPost)
+	mux.HandleFunc(urlPosts, h.ListPosts)
+	mux.HandleFunc(urlPostCreate, h.CreatePost)
+	mux.HandleFunc(urlPostDelete, h.DeletePost)
+	mux.HandleFunc(urlPostUpdate, h.UpdatePost)
 
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))

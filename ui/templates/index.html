@@ -17,12 +17,22 @@
 </nav> -->
 <body>
     <ul>
-        <li><a href="./index.html">Home</a></li>
+        <li><a href="/">Home</a></li>
         <li><a href="/post/create">New Posts</a></li>
-        <li><a href="contact.asp">Most Likes</a></li>
-        <li><a href="./signUp.html">Sign Up</a></li>
-        <li><a href="./singIn.html">Sign In</a></li>
+        <li><a href="/post/all">All Post</a></li>
+        <li style="float:right"><a href="./signUp.html">Sign Up</a></li>
+        <li style="float:right"><a href="./singIn.html">Sign In</a></li>
         <li style="float:right"><a class="active" href="about.asp">Exit</a></li>
       </ul>
+
+
+
+
+
+
+    <h1>all Post</h1>
+    {{range .  }}
+    <option value="{{.ID}}">{{.Title}}</option>
+    {{end}}
 </body>
 </html>

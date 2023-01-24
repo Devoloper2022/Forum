@@ -9,26 +9,17 @@
 </head>
 <body>
 
-    <ul>
-        <li><a href="./index.html">Home</a></li>
-        <li><a href="/post/create">New Posts</a></li>
-        <li><a href="contact.asp">Most Likes</a></li>
-        <li><a href="./signUp.html">Sign Up</a></li>
-        <li><a href="./singIn.html">Sign In</a></li>
-        <li style="float:right"><a class="active" href="about.asp">Exit</a></li>
-      </ul>
-</body>
     <h1>Create a New Post</h1>
     <form method="POST" action="/post/create">
         <label for="title"><b>Title</b></label><br>
         <input type="text" name="title"><br>
         <label for="content"><b>Content</b></label><br>
-        <textarea rows="10" cols="30" name="content"></textarea><br>
+        <textarea rows="10" cols="30" name="text"></textarea><br>
         
         <label for="categories">Categories</label><br>
         <select size="3" multiple id="categories "name="categories">
-          {{range .Category}}
-          <option value="{{.ID}}">{{.Name}}</option>
+          {{range .  }}
+          <option value="{{.ID}}">{{.Title}}</option>
           {{end}}
         </select><br>
         <button type="submit">Create</button> 

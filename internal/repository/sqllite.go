@@ -25,9 +25,9 @@ const (
 			Title TEXT NOT NULL,
 			Text TEXT,
 			Date TEXT,
-			UserID INTEGER,
 			Like INTEGER,
 			Dislike INTEGER,
+			UserID INTEGER,
 			FOREIGN KEY (UserID) REFERENCES users (ID) ON DELETE CASCADE
 		);`
 	categoryTable = `CREATE TABLE IF NOT EXISTS categories(
@@ -80,6 +80,10 @@ const (
 			('JS'),
 			('Flutter'),
 			('Unity'),
+			('Front End'),
+			('Backend'),
+			('DevOps'),
+			('Cyber Security'),
 			('Unreal Engine');`
 )
 

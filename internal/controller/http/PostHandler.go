@@ -2,7 +2,7 @@ package http
 
 import (
 	"fmt"
-	"forum/internal/models"
+	dto "forum/internal/DTO"
 	"html/template"
 	"log"
 	"net/http"
@@ -10,6 +10,11 @@ import (
 )
 
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != urlPostCreate {
+		h.notFound(w)
+		return
+	}
+
 	if r.Method == "GET" {
 		ts, err := template.ParseFiles("./ui/templates/post/createPost.html")
 		if err != nil {
@@ -17,30 +22,44 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = ts.Execute(w, nil)
+		categories, err := h.services.GetAllCategories()
 		if err != nil {
-			log.Println(err.Error())
+			h.errorLog.Println(err.Error())
+			h.serverError(w, err)
+			return
+		}
+
+		err = ts.Execute(w, categories)
+		if err != nil {
+			h.serverError(w, err)
 			return
 		}
 	} else if r.Method == "POST" {
 
-		title := "История про улитку"
-		content := "Улитка выползла из ."
-		var userID int64 = 60
+		err := r.ParseForm()
+		if err != nil {
+			log.Println("error parse form :", err)
+			return
+		}
+		title := r.PostFormValue("title")
+		text := r.PostFormValue("text")
+		categories := r.Form["categories"]
 
-		id, err := h.services.CreatePost(models.Post{Title: title, Text: content, UserID: userID})
+		if title == "" || text == "" || categories == nil {
+			h.clientError(w, 400)
+			return
+		}
+		var userID int64 = 60 /// DEL
+
+		err = h.services.CreatePost(dto.PostDto{Title: title, Text: text, User: dto.UserDto{ID: userID}}, categories)
+
 		if err != nil {
 			h.serverError(w, err)
 			return
 		}
 
-		http.Redirect(w, r, fmt.Sprintf("/", id), http.StatusSeeOther)
-		w.Write([]byte("CreatePost page"))
+		http.Redirect(w, r, fmt.Sprintf("/"), http.StatusSeeOther)
 	}
-}
-
-func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("DeletePost из page"))
 }
 
 func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
@@ -60,4 +79,8 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) ListPosts(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("ListPosts из page"))
+}
+
+func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("DeletePost из page"))
 }

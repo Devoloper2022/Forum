@@ -17,6 +17,7 @@ func NewDatabase(db *sql.DB) *Database {
 type Repository struct {
 	Autorization
 	Post
+	Category
 	// Comment
 	// VotePost
 	// VoteComment
@@ -26,6 +27,7 @@ func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
 		Autorization: NewDatabase(db),
 		Post:         NewDatabase(db),
+		Category:     NewDatabase(db),
 		// 		Comment:      NewCommentRepository(db),
 		// 		VotePost:     NewVotePostRepository(db),
 		// 		VoteComment:  NewVoteCommentRepository(db),
