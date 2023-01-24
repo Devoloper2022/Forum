@@ -34,7 +34,7 @@ func (s *PostService) CreatePost(post dto.PostDto, categories []string) error {
 		Date:    t,
 		Like:    0,
 		Dislike: 0,
-		UserID:  post.UserID.ID,
+		UserID:  post.User.ID,
 	}
 	pid, err := s.repo.CreatePost(newPost)
 	if err != nil {
@@ -67,7 +67,11 @@ func (s *PostService) GetPost(postId int64) (dto.PostDto, error) {
 	}
 
 	t := post.Date.Format("d MMM yyyy HH:mm:ss")
-	user := s.repo.GetUser(post.UserID)
+	user, err := s.repo.GetUser(post.UserID)
+	if err != nil {
+		return dto.PostDto{}, nil
+	}
+
 	return dto.PostDto{
 		ID:    postId,
 		Title: post.Title,
@@ -78,7 +82,23 @@ func (s *PostService) GetPost(postId int64) (dto.PostDto, error) {
 }
 
 func (s *PostService) GetAllPosts() ([]dto.PostDto, error) {
+	list, err := s.repo.GetAllPosts()
+	if err != nil {
+		return nil, nil
+	}
+
+	var listDto []dto.PostDto
+
+	for _, p := range list {
+		var post dto.PostDto
+		post.ID =
+	
+	}
 }
 
 func (s *PostService) GetAllPostsByUserID(userId int64) ([]dto.PostDto, error) {
+}
+
+func ()  {
+	
 }

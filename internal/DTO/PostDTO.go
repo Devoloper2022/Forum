@@ -1,5 +1,7 @@
 package dto
 
+import "forum/internal/models"
+
 type PostDto struct {
 	ID        int64         `json:"ID"`
 	Title     string        `json:"title"`
@@ -10,17 +12,19 @@ type PostDto struct {
 	Dislike   int64         `json:"dislike"`
 	Likes     []PostLikeDto `json:"likes"`
 	Categorys []CategoryDto `json:"categorys"`
-	// Comments  []Comment  `json:"comments"`
+	// Comments  []Comment     `json:"comments"`
 }
 
-// func (p *PostDto) GetDto(post models.Post) *PostDto {
-// 	return &PostDto{
-// 		ID:    post.ID,
-// 		Title: post.Title,
-// 		Text:  post.Text,
-// 		Date:  post.Date.Format("d MMM yyyy HH:mm:ss"),
-// 	}
-// }
+func (p *PostDto) GetPostDto(post models.Post, user UserDto,[]PostLikeDto,catCategoryDto) PostDto {
+	return PostDto{
+		ID:      post.ID,
+		Title:   post.Title,
+		Text:    post.Text,
+		Date:    post.Date.Format("d MMM yyyy HH:mm:ss"),
+		Like:    post.Like,
+		Dislike: post.Dislike,
+	}
+}
 
 // func GetModel(post PostDto) *models.Post {
 // 	date, _ := time.Parse("d MMM yyyy HH:mm:ss", post.Date)
