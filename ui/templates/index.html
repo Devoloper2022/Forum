@@ -24,15 +24,27 @@
         <li style="float:right"><a href="./singIn.html">Sign In</a></li>
         <li style="float:right"><a class="active" href="about.asp">Exit</a></li>
       </ul>
+    
 
 
+      <div class="container">
+        <div >
+            <h1 class="title">Pasts</h1>
+        </div>
 
-
-
-
-    <h1>all Post</h1>
-    {{range .  }}
-    <option value="{{.ID}}">{{.Title}}</option>
-    {{end}}
+        <div class="grid-container">
+            {{range .}}
+            <div class="card">
+                <a href="/post?id={{ .ID}}" > 
+                
+                <h1>
+                    {{ .Title }}
+                </h1>
+                </a>
+            </div>
+            {{end}}
+            
+        </div>
+    </div>
 </body>
 </html>

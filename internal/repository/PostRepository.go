@@ -2,9 +2,7 @@ package repository
 
 import (
 	"fmt"
-	dto "forum/internal/DTO"
 	"forum/internal/models"
-	"strconv"
 )
 
 type Post interface {
@@ -17,8 +15,6 @@ type Post interface {
 	// GetPostsByLeastLikes() ([]models.PostInfo, error)
 	// GetPostByCategory(category string) ([]models.PostInfo, error)
 
-	CreatePostCategory(postId int64, categories []string) error
-	GetUser(userId int64) (dto.UserDto, error)
 }
 
 // main functions
@@ -38,7 +34,7 @@ func (r *Database) CreatePost(post models.Post) (int64, error) {
 	}
 
 	return int64(id), nil
-}
+} // done
 
 func (r *Database) UpdatePost(post models.Post) error {
 	query := "UPDATE posts SET  Title =?, Text=?, WHERE  ID = ?"
@@ -56,10 +52,10 @@ func (r *Database) UpdatePost(post models.Post) error {
 	}
 
 	return nil
-}
+} // not checked
 
 func (r *Database) GetAllPosts() ([]models.Post, error) {
-	query := ("SELECT *  FROM posts")
+	query := ("SELECT *  from posts")
 	st, err := r.db.Prepare(query)
 	if err != nil {
 		return nil, fmt.Errorf("\nrepository : Get All Posts  checker 1\n: %w", err)
@@ -80,7 +76,7 @@ func (r *Database) GetAllPosts() ([]models.Post, error) {
 	var posts []models.Post
 	for rows.Next() {
 		var post models.Post
-		if err != rows.Scan(&post.ID, &post.Title, &post.Text, &post.Date, &post.Like, &post.Dislike, &post.UserID) {
+		if err := rows.Scan(&post.ID, &post.Title, &post.Text, &post.Date, &post.Like, &post.Dislike, &post.UserID); err != nil {
 			return nil, fmt.Errorf("\n repository : Get All Posts  checker 4\n: %w", err)
 		}
 		posts = append(posts, post)
@@ -136,44 +132,4 @@ func (r *Database) GetPostByUserID(userID int64) ([]models.Post, error) {
 	}
 
 	return posts, nil
-}
-
-// helper functions
-func (r *Database) CreatePostCategory(postId int64, categories []string) error {
-	query := ("INSERT INTO categoriesPost (PostID,CategoryID) VALUES (?,?)")
-	st, err := r.db.Prepare(query)
-	if err != nil {
-		return fmt.Errorf("repository : create PostCategory  checker 1: %w", err)
-	}
-	defer st.Close()
-
-	for _, cid := range categories {
-		num, err := strconv.Atoi(cid)
-		if err != nil {
-			return fmt.Errorf("repository : create PostCategory  checker 2: %w", err)
-		}
-		_, err = st.Exec(postId, num)
-		if err != nil {
-			return fmt.Errorf("repository : create PostCategory checker 3: %w", err)
-		}
-	}
-	return nil
-}
-
-func (r *Database) GetUser(userId int64) (dto.UserDto, error) {
-	query := ("SELECT * FROM users WHERE ID = ?")
-	st, err := r.db.Prepare(query)
-	if err != nil {
-		return dto.UserDto{}, fmt.Errorf("repository : Get Post  checker 1: %w", err)
-	}
-	defer st.Close()
-
-	row, err := st.Query(userId)
-	defer row.Close()
-	var user dto.UserDto
-	if err = row.Scan(&user.ID, &user.Username); err != nil {
-		return dto.UserDto{}, err
-	}
-
-	return user, nil
 }

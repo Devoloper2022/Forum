@@ -13,6 +13,7 @@ type Category interface {
 	// GetPost(id int) (models.PostInfo, error)
 	// CreatePostCategory(postId int, categories []string) error
 	GetAllCategories() ([]models.Category, error)
+	CreatePostCategory(postId int64, categories []int64) error
 	// GetPostsByMostLikes() ([]models.PostInfo, error)
 	// GetPostsByLeastLikes() ([]models.PostInfo, error)
 	// GetPostByCategory(category string) ([]models.PostInfo, error)
@@ -37,13 +38,19 @@ func (r *Database) GetAllCategories() ([]models.Category, error) {
 	return categoryList, nil
 }
 
-// func (r *Database) getUserById(id int64) (m.User, error) {
-// 	findId := r.db.QueryRow("SELECT * FROM users WHERE  users_id = ?", id)
-// 	user := m.User{}
-// 	err := findId.Scan(&user.ID, user.Email, user.Password, user.Username)
-// 	if err != nil {
-// 		log.Println("Repo ==> GetUserById")
-// 		return user, err
-// 	}
-// 	return user, nil
-// }
+func (r *Database) CreatePostCategory(postId int64, categories []int64) error {
+	query := ("INSERT INTO categoriesPost (PostID,CategoryID) VALUES (?,?)")
+	st, err := r.db.Prepare(query)
+	if err != nil {
+		return fmt.Errorf("repository : create PostCategory  checker 1: %w", err)
+	}
+	defer st.Close()
+
+	for _, cid := range categories {
+		_, err = st.Exec(postId, cid)
+		if err != nil {
+			return fmt.Errorf("repository : create PostCategory checker 3: %w", err)
+		}
+	}
+	return nil
+}

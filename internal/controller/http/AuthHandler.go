@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -21,7 +22,15 @@ func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = ts.Execute(w, nil)
+	posts, err := h.services.GetAllPosts()
+	fmt.Printf("Level handler result: %s", posts)
+	if err != nil {
+		h.errorLog.Println(err.Error())
+		h.serverError(w, err)
+		return
+	}
+
+	err = ts.Execute(w, posts)
 	if err != nil {
 		h.serverError(w, err)
 	}

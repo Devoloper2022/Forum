@@ -10,27 +10,23 @@
 <body>
 
     <h1>all Post</h1>
-    <form method="POST" action="/post/create">
-        <label for="title"><b>Title</b></label><br>
-        <input type="text" name="title"><br>
-        <label for="content"><b>Content</b></label><br>
-        <textarea rows="10" cols="30" name="text"></textarea><br>
+
+
+
+    <div>
+
+        <h1 class="logo_text">Title: {{ .Title }}</h1>
+        <h1 class="logo_text">Text: {{ .Text }}</h1>
+        <h1 class="logo_text">Date: {{ .Date}}</h1>
+        <h1 class="logo_text">Like: {{ .Like }}</h1>
+        <h1 class="logo_text">Dislike: {{ .Dislike}}</h1>
+        <h1 class="logo_text" style="text-align: center">Label:</h1>
         
-        <label for="categories">Categories</label><br>
-        <select size="3" multiple id="categories "name="categories">
-          {{range .  }}
-          <option value="{{.ID}}">{{.Title}}</option>
-          {{end}}
-        </select><br>
-        <button type="submit">Create</button> 
-    </form>
-
-
-    <h1>all Post</h1>
-    {{range .  }}
-    <option value="{{.ID}}">{{.Title}}</option>
-    {{end}}
-
+        {{range .Categorys}}
+        <h2 class="logo_text">{{ .Title }}</h2>
+        {{end}}        
+       
+    </div>
 
 
 

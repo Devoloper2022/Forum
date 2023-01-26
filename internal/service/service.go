@@ -16,7 +16,7 @@ type Service struct {
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Autorization:    NewAuthService(repos.Autorization),
-		Post:            NewPostService(repos.Post),
+		Post:            NewPostService(repos.Post, repos.Category, repos.User),
 		CategoryService: *NewCategoryService(repos.Category),
 		// Comment:      NewCommentService(repos.Comment),
 		// VotePost:     NewVotePostService(repos.VotePost),
