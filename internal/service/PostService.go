@@ -10,7 +10,7 @@ import (
 )
 
 type Post interface {
-	CreatePost(dto dto.PostDto, categories []string) error
+	CreatePost(dto dto.PostDto, categories []string) (int64, error)
 	GetAllPosts() ([]dto.PostDto, error)
 	GetAllPostsByUserID(userId int64) ([]dto.PostDto, error)
 	GetPost(postId int64) (dto.PostDto, error)
@@ -33,7 +33,7 @@ func NewPostService(repo repository.Post, categories repository.Category, user r
 	}
 }
 
-func (s *PostService) CreatePost(post dto.PostDto, categories []string) error {
+func (s *PostService) CreatePost(post dto.PostDto, categories []string) (int64, error) {
 	t := time.Now().Format("d MMM yyyy HH:mm:ss")
 
 	newPost := models.Post{
@@ -46,28 +46,28 @@ func (s *PostService) CreatePost(post dto.PostDto, categories []string) error {
 	}
 	pid, err := s.repo.CreatePost(newPost)
 	if err != nil {
-		return err
+		return pid, err
 	}
 	var listID []int64
 	for _, cid := range categories {
 		num, err := strconv.Atoi(cid)
 		if err != nil {
-			return err
+			return pid, err
 		}
 
 		listID = append(listID, int64(num))
 	}
 
 	if err != nil {
-		return fmt.Errorf("repository : create PostCategory  checker 2: %w", err)
+		return pid, fmt.Errorf("service : create PostCategory  checker 2: %w", err)
 	}
 	err = s.categories.CreatePostCategory(pid, listID)
 
 	if err != nil {
-		return err
+		return pid, err
 	}
 
-	return nil
+	return pid, nil
 } // done
 
 func (s *PostService) UpdatePost(post dto.PostDto) error {
@@ -84,13 +84,10 @@ func (s *PostService) UpdatePost(post dto.PostDto) error {
 func (s *PostService) GetPost(postId int64) (dto.PostDto, error) {
 	post, err := s.repo.GetPost(postId)
 	if err != nil {
-		return dto.PostDto{}, nil
+		return dto.PostDto{}, err
 	}
 
-	// t := post.Date.Format("d MMM yyyy HH:mm:ss")
-	user, err := s.user.GetUser(post.UserID)
-	fmt.Println(user) // fix
-
+	// user, err := s.user.GetUser(post.UserID) // fix
 	if err != nil {
 		return dto.PostDto{}, nil
 	}
@@ -110,7 +107,6 @@ func (s *PostService) GetAllPosts() ([]dto.PostDto, error) {
 		return nil, err
 	}
 
-	fmt.Printf("Level service result: %s\n", list)
 	var listDto []dto.PostDto
 
 	for _, p := range list {
@@ -119,7 +115,7 @@ func (s *PostService) GetAllPosts() ([]dto.PostDto, error) {
 	}
 
 	return listDto, nil
-}
+} // checked // fix
 
 func (s *PostService) GetAllPostsByUserID(userId int64) ([]dto.PostDto, error) {
 	list, err := s.repo.GetPostByUserID(userId)

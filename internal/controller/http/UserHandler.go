@@ -1,11 +1,21 @@
 package http
 
+import "net/http"
+
 // import (
 // 	"encoding/json"
 // 	"fmt"
 // 	"net/http"
 // 	"time"
 // )
+
+func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		h.notFound(w)
+		return
+	}
+	w.Write([]byte("SignIn page"))
+}
 
 // type Credentials struct {
 // 	Password string `json:"password"`

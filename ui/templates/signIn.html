@@ -9,12 +9,18 @@
 </head>
 <body>
     <h1>Sign In</h1>
-    <p>Email</p>
-    <input type="text">
-    <p>Password</p>
-    <input type="text">
-    <p><button>Sign In</button></p>
-    <a href="./signUp.html"><button>Sign Up</button></a>
-    <a href="./index.html"><button>Home</button></a>
+    <form method="POST" action="/signin">
+        <p>Email</p>
+        <input type="text" name="email">
+        <p>Password</p>
+        <input type="text" name="password">
+        <p><button>Sign In</button></p>
+    </form>
+    
+    <a href="/signup"><button>Sign Up</button></a>
+    <a href="/"><button>Home</button></a>
+
+
+    </form>
 </body>
 </html>

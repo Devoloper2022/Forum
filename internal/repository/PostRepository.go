@@ -83,7 +83,7 @@ func (r *Database) GetAllPosts() ([]models.Post, error) {
 	}
 
 	return posts, nil
-}
+} // done
 
 func (r *Database) GetPost(postId int64) (models.Post, error) {
 	query := ("SELECT * FROM posts WHERE ID = ?")
@@ -93,8 +93,7 @@ func (r *Database) GetPost(postId int64) (models.Post, error) {
 	}
 	defer st.Close()
 
-	row, err := st.Query(postId)
-	defer row.Close()
+	row := st.QueryRow(postId)
 	var post models.Post
 	if err = row.Scan(&post.ID, &post.Title, &post.Text, &post.Date, &post.Like, &post.Dislike, &post.UserID); err != nil {
 		return models.Post{}, err
