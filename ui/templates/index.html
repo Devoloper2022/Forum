@@ -8,34 +8,46 @@
     <link rel="stylesheet" href="../static/style/style.css" type="text/css">
 </head>
 <body>
-    <ul>
+    <header>
+    <ul class="ulHeader">
         <li><a href="/">Home</a></li>
         <li><a href="/post/create">New Posts</a></li>
         <li><a href="/post/all">All Post</a></li>
         <li style="float:right"><a href="./signUp.html">Sign Up</a></li>
-        <li style="float:right"><a href="./singIn.html">Sign In</a></li>
+        <li style="float:right"><a href="./singin.html">Sign In</a></li>
         <li style="float:right"><a class="active" href="about.asp">Exit</a></li>
       </ul>
-    
-
-
-      <div class="container">
-        <div >
-            <h1 class="title">Pasts</h1>
+    </header>
+    <div class="wrapper">
+     <div class="Navbar">
+        <ul class="ulNavbar">
+            <li>Go</li>
+            <li>Rust</li>
+            <li>JavaScript</li>
+            <li>Flutter</li>
+            <li>Unity</li>
+        </ul>
         </div>
 
-        <div class="grid-container">
-            {{range .}}
-            <div class="card">
-                <a href="/post?id={{ .ID}}" > 
-                
-                <h1>
-                    {{ .Title }}
-                </h1>
-                </a>
+
+        <div class="container">
+            <div >
+                <h1 class="title">Pasts</h1>
             </div>
-            {{end}}
-            
+
+            <div class="grid-container">
+                {{range .}}
+                <div class="card">
+                    <a href="/post?id={{ .ID}}" > 
+                    
+                    <h1>
+                        {{ .Title }}
+                    </h1>
+                    </a>
+                </div>
+                {{end}}
+                
+            </div>
         </div>
     </div>
 </body>
