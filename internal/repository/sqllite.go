@@ -100,7 +100,7 @@ func InitDB(cfg Config) (*sql.DB, error) {
 }
 
 func CreateTables(db *sql.DB) error {
-	allTables := []string{userTable, postTable, commentTable, categoryTable, categoryPostTable, postLikeTable, commentLikeTable, insertCategories}
+	allTables := []string{userTable, postTable, commentTable, categoryTable, categoryPostTable, postLikeTable, sesionTable, commentLikeTable, insertCategories}
 	for _, table := range allTables {
 		_, err := db.Exec(table)
 		if err != nil {
