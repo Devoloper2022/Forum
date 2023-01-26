@@ -7,43 +7,52 @@
     <title>Forum</title>
     <link rel="stylesheet" href="../static/style/style.css" type="text/css">
 </head>
-
-
-<!-- <header>
-    <h1><a href='/'>Snippetbox</a></h1>
-</header>
-<nav>
-    <a href='/'>Домашняя страница</a>
-</nav> -->
 <body>
-    <ul>
+    <header>
+    <ul class="ulHeader">
         <li><a href="/">Home</a></li>
         <li><a href="/post/create">New Posts</a></li>
         <li><a href="/post/all">All Post</a></li>
+<<<<<<< HEAD
         <li style="float:right"><a href="/signup">Sign Up</a></li>
         <li style="float:right"><a href="/signin">Sign In</a></li>
+=======
+        <li style="float:right"><a href="./signUp.html">Sign Up</a></li>
+        <li style="float:right"><a href="./singin.html">Sign In</a></li>
+>>>>>>> ded17242280d505a056f0b6c5127e91df9c0eec4
         <li style="float:right"><a class="active" href="about.asp">Exit</a></li>
       </ul>
-    
-
-
-      <div class="container">
-        <div >
-            <h1 class="title">Pasts</h1>
+    </header>
+    <div class="wrapper">
+     <div class="Navbar">
+        <ul class="ulNavbar">
+            <li>Go</li>
+            <li>Rust</li>
+            <li>JavaScript</li>
+            <li>Flutter</li>
+            <li>Unity</li>
+        </ul>
         </div>
 
-        <div class="grid-container">
-            {{range .}}
-            <div class="card">
-                <a href="/post?id={{ .ID}}" > 
-                
-                <h1>
-                    {{ .Title }}
-                </h1>
-                </a>
+
+        <div class="container">
+            <div >
+                <h1 class="title">Pasts</h1>
             </div>
-            {{end}}
-            
+
+            <div class="grid-container">
+                {{range .}}
+                <div class="card">
+                    <a href="/post?id={{ .ID}}" > 
+                    
+                    <h1>
+                        {{ .Title }}
+                    </h1>
+                    </a>
+                </div>
+                {{end}}
+                
+            </div>
         </div>
     </div>
 </body>
