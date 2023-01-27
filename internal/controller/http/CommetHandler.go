@@ -73,14 +73,12 @@ func (h *Handler) ListComments(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	fmt.Println("Hello")
 	if r.Method != "GET" {
 		h.notFound(w)
 		return
 	}
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 
-	fmt.Println(id)
 	if err != nil || id < 1 {
 		h.notFound(w)
 		return

@@ -53,13 +53,15 @@ func (s *CommentService) GetAllCommentsByPostId(postID int64) ([]dto.CommentDto,
 	}
 
 	var dtoList []dto.CommentDto
+
 	for _, m := range list {
-		user, err := s.user.GetUser(m.ID)
+		user, err := s.user.GetUser(m.UserID)
 		if err != nil {
 			return nil, err
 		}
 		dtoUser := dto.GetUserDto(user)
-		dto.GetCommentDto(m, dtoUser, dto.CommentLikeDto{})
+		dtoComment := dto.GetCommentDto(m, dtoUser, dto.CommentLikeDto{})
+		dtoList = append(dtoList, dtoComment)
 	}
 
 	return dtoList, nil

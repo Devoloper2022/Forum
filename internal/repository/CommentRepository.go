@@ -97,7 +97,7 @@ func (r *Database) GetAllCommentByPostID(postId int64) ([]models.Comment, error)
 	var comments []models.Comment
 	for rows.Next() {
 		var comment models.Comment
-		if err != rows.Scan(&comment.ID, &comment.Text, &comment.Date, &comment.UserID, &comment.PostID) {
+		if err != rows.Scan(&comment.ID, &comment.Text, &comment.Date, &comment.Like, &comment.Dislike, &comment.UserID, &comment.PostID) {
 			return nil, fmt.Errorf("\n repository : Get Post by UserID  checker 4\n: %w", err)
 		}
 		comments = append(comments, comment)
