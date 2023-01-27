@@ -34,7 +34,7 @@ const (
 	urlCommentDelete = "/comment/delete"
 	urlCommentUpdate = "/comment/update "
 	urlComment       = "/comment/"
-	urlComments      = "/commens/all/"
+	urlComments      = "/comments/all/"
 	urlCommentLike   = "/comment/like"
 )
 
