@@ -7,7 +7,7 @@ import (
 
 type Comment interface {
 	CreateComment(comment models.Comment) error
-	GetComment(commentID int64) error
+	GetComment(commentID int64) (models.Comment, error)
 	UpdateComment(comment models.Comment) error
 	DeleteComment(commentID int64) error
 	GetAllCommentByPostID(postId int64) ([]models.Comment, error)
@@ -15,7 +15,7 @@ type Comment interface {
 }
 
 func (r *Database) CreateComment(comment models.Comment) error {
-	query := ("INSERT INTO comments (Text,Date,UserID,PostID) VALUES (?,?,?,?)")
+	query := ("INSERT INTO comments (Text,Date,Like,Dislike,UserID,PostID) VALUES (?,?,?,?,?,?)")
 	st, err := r.db.Prepare(query)
 	defer st.Close()
 
@@ -23,39 +23,39 @@ func (r *Database) CreateComment(comment models.Comment) error {
 		return fmt.Errorf("repository : create Comment : %w", err)
 	}
 
-	_, err = st.Exec(comment.Text, comment.Date, comment.UserID, comment.PostID)
+	_, err = st.Exec(comment.Text, comment.Date, comment.Like, comment.Dislike, comment.UserID, comment.PostID)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *Database) GetComment(commentID int64) error {
+func (r *Database) GetComment(commentID int64) (models.Comment, error) {
 	query := ("SELECT * FROM comments WHERE ID = ?")
 	st, err := r.db.Prepare(query)
 	defer st.Close()
 
 	if err != nil {
-		return fmt.Errorf("repository : Get Post  checker 1: %w", err)
+		return models.Comment{}, fmt.Errorf("repository : Get Post  checker 1: %w", err)
 	}
 
-	_, err = st.Exec(commentID)
-
-	if err != nil {
-		return err
+	row := st.QueryRow(commentID)
+	var comment models.Comment
+	if err = row.Scan(&comment.ID, &comment.Text, &comment.Date, &comment.Like, &comment.Dislike, &comment.PostID, &comment.UserID); err != nil {
+		return models.Comment{}, err
 	}
-	return nil
+	return comment, nil
 }
 
 func (r *Database) UpdateComment(comment models.Comment) error {
-	query := "UPDATE comments SET  Text =? WHERE  ID = ?"
+	query := "UPDATE comments SET  Text =?,Like,Dislike WHERE  ID = ?"
 	st, err := r.db.Prepare(query)
 	defer st.Close()
 
 	if err != nil {
 		return fmt.Errorf("\nrepository : Update Post  checker 1\n: %w", err)
 	}
-	_, err = st.Query(comment.Text, comment.ID)
+	_, err = st.Query(comment.Text, comment.Like, comment.Dislike, comment.ID)
 	if err != nil {
 		return fmt.Errorf("\nrepository : Update Post  checker 1\n: %w", err)
 	}

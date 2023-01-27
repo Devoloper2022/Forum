@@ -15,12 +15,8 @@
 
     <div>
         <div>
-            <a href="/post/update"><button disabled>Edit</button></a>
+            <a href="/post/update"><button disabled>Update</button></a>
             <a href="/post/delete"><button disabled>Delete</button></a>
-            <form method="GET" action="/comment/create?id={{ .ID}}">
-                <button>Comment</button>
-            </form>
-
         </div>
         <h1 class="logo_text">Title: {{ .Title }}</h1>
         <h1 class="logo_text">Text: {{ .Text }}</h1>
@@ -39,15 +35,6 @@
         {{end}}        
        
     </div>
-
-    <form method="POST" action="/comment/create">
-        <input type="hidden" name ="postId"value="{{.ID}}">
-       
-        <label for="text"><b>Comment</b></label><br>
-        <textarea rows="10" cols="30" name="text"></textarea><br>
-        
-        <button type="submit">Send</button> 
-    </form>
 
 
 

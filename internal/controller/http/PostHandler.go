@@ -49,7 +49,7 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 			h.clientError(w, 400)
 			return
 		}
-		var userID int64 = 60 /// DEL
+		var userID int64 = 1 /// DEL
 
 		pid, err := h.services.CreatePost(dto.PostDto{Title: title, Text: text, User: dto.UserDto{ID: userID}}, categories)
 		if err != nil {

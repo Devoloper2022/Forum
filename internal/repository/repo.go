@@ -19,7 +19,7 @@ type Repository struct {
 	Post
 	Category
 	User
-	// Comment
+	Comment
 	// VotePost
 	// VoteComment
 }
@@ -30,7 +30,7 @@ func NewRepository(db *sql.DB) *Repository {
 		Post:         NewDatabase(db),
 		Category:     NewDatabase(db),
 		User:         NewDatabase(db),
-		// 		Comment:      NewCommentRepository(db),
+		Comment:      NewDatabase(db),
 		// 		VotePost:     NewVotePostRepository(db),
 		// 		VoteComment:  NewVoteCommentRepository(db),
 	}

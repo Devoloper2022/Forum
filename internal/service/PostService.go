@@ -87,10 +87,14 @@ func (s *PostService) GetPost(postId int64) (dto.PostDto, error) {
 		return dto.PostDto{}, err
 	}
 
-	// user, err := s.user.GetUser(post.UserID) // fix
+	user, err := s.user.GetUser(post.UserID)
+	if err != nil {
+		return dto.PostDto{}, err
+	}
+
 	cat, err := s.categories.GetAllCategoriesByPostId(post.ID)
 	if err != nil {
-		return dto.PostDto{}, nil
+		return dto.PostDto{}, err
 	}
 
 	return dto.PostDto{
@@ -98,7 +102,7 @@ func (s *PostService) GetPost(postId int64) (dto.PostDto, error) {
 		Title:     post.Title,
 		Text:      post.Text,
 		Date:      post.Date,
-		User:      dto.UserDto{},
+		User:      dto.GetUserDto(user),
 		Categorys: cat,
 	}, nil
 } // fix

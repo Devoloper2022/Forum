@@ -4,6 +4,8 @@ import (
 	"errors"
 	"forum/internal/models"
 	"forum/internal/repository"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 var (
@@ -31,4 +33,8 @@ func NewAuthService(repo repository.Autorization) *AuthService {
 
 func (s *AuthService) CreateAuth(user models.User) error {
 	return nil
+}
+
+func checkHash(hpass, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hpass), []byte(password))
 }

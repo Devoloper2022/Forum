@@ -37,10 +37,10 @@ func (r *Database) GetUser(userId int64) (models.User, error) {
 	}
 	defer st.Close()
 
-	row, err := st.Query(userId)
-	defer row.Close()
+	row := st.QueryRow(userId)
+
 	var user models.User
-	if err = row.Scan(&user.ID, &user.Username); err != nil {
+	if err = row.Scan(&user.ID, &user.Username, &user.Email, &user.Password); err != nil {
 		return models.User{}, err
 	}
 

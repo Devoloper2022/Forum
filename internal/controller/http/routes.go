@@ -21,6 +21,7 @@ const (
 	urlPost       = "/post/"
 	urlPosts      = "/post/all"
 	urlPostLike   = "/post/like"
+	urlFilter     = "/filter/all"
 
 	// user
 	urlUser        = "/user/"
@@ -49,7 +50,8 @@ func (h *Handler) Routes() *http.ServeMux {
 	mux.HandleFunc(urlLogout, h.Logout)   // for auth
 
 	// User
-	// mux.HandleFunc(urlUserProfile, h.GetUser) // for owner
+	mux.HandleFunc(urlUser, h.GetUser)        // for auth
+	mux.HandleFunc(urlUserProfile, h.profile) // for owner
 	// mux.HandleFunc(urlUserDelete, h.)       	// for owner
 	// mux.HandleFunc(urlUserUpdate, h.)         // for owner
 
@@ -62,12 +64,12 @@ func (h *Handler) Routes() *http.ServeMux {
 	mux.HandleFunc(urlPostLike, h.LikePost)     // for owner
 
 	// comment
-	mux.HandleFunc(urlComment, h.GetPost)          // for all
-	mux.HandleFunc(urlComments, h.ListPosts)       // for all
-	mux.HandleFunc(urlCommentCreate, h.CreatePost) // for auth
-	mux.HandleFunc(urlCommentDelete, h.DeletePost) // for owner
-	mux.HandleFunc(urlCommentUpdate, h.UpdatePost) // for owner
-	mux.HandleFunc(urlCommentLike, h.LikeComment)  // for owner
+	mux.HandleFunc(urlComment, h.GetPost)             // for all
+	mux.HandleFunc(urlComments, h.ListPosts)          // for all
+	mux.HandleFunc(urlCommentCreate, h.CreateComment) // for auth
+	mux.HandleFunc(urlCommentDelete, h.DeletePost)    // for owner
+	mux.HandleFunc(urlCommentUpdate, h.UpdatePost)    // for owner
+	mux.HandleFunc(urlCommentLike, h.LikeComment)     // for owner
 
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
