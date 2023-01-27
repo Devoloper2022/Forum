@@ -68,12 +68,20 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 // }
 
 func (h *Handler) ListComments(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != urlComments {
+	// if r.URL.Path != urlComments {
+	// 	h.notFound(w)
+	// 	return
+	// }
+
+	fmt.Println("Hello")
+	if r.Method != "GET" {
 		h.notFound(w)
 		return
 	}
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 
-	if r.Method != "GET" {
+	fmt.Println(id)
+	if err != nil || id < 1 {
 		h.notFound(w)
 		return
 	}
@@ -88,14 +96,14 @@ func (h *Handler) ListComments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	posts, err := h.services.GetAllPosts()
+	comments, err := h.services.Comment.GetAllCommentsByPostId(int64(id))
 	if err != nil {
 		h.errorLog.Println(err.Error())
 		h.serverError(w, err)
 		return
 	}
 
-	err = ts.Execute(w, posts)
+	err = ts.Execute(w, comments)
 	if err != nil {
 		h.serverError(w, err)
 	}

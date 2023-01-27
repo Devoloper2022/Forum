@@ -28,6 +28,7 @@
         <h1 class="logo_text">Like: {{ .Like }}</h1>
         <h1 class="logo_text">Dislike: {{ .Dislike}}</h1>
         <h1 class="logo_text">Author:  <a href="/user?id={{ .User.ID}}" >  {{ .User.Username}}</a></h1>
+        
         <h1 class="logo_text" style="text-align: center">Label:</h1>
         
         {{range .Categorys}}
@@ -39,6 +40,7 @@
         {{end}}        
        
     </div>
+  <a href="/comments/all?id={{ .ID}}" >  View comments</a>
 
     <form method="POST" action="/comment/create">
         <input type="hidden" name ="postId"value="{{.ID}}">

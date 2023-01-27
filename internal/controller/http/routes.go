@@ -34,7 +34,7 @@ const (
 	urlCommentDelete = "/comment/delete"
 	urlCommentUpdate = "/comment/update "
 	urlComment       = "/comment/"
-	urlComments      = "/comment/all/"
+	urlComments      = "/commens/all/"
 	urlCommentLike   = "/comment/like"
 )
 
@@ -65,7 +65,7 @@ func (h *Handler) Routes() *http.ServeMux {
 
 	// comment
 	mux.HandleFunc(urlComment, h.GetPost)             // for all
-	mux.HandleFunc(urlComments, h.ListPosts)          // for all
+	mux.HandleFunc(urlComments, h.ListComments)       // for all
 	mux.HandleFunc(urlCommentCreate, h.CreateComment) // for auth
 	mux.HandleFunc(urlCommentDelete, h.DeletePost)    // for owner
 	mux.HandleFunc(urlCommentUpdate, h.UpdatePost)    // for owner
