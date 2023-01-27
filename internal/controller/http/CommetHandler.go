@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	dto "forum/internal/DTO"
+	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -14,19 +15,6 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if r.Method == "GET" {
-	// 	ts, err := template.ParseFiles("./ui/templates/comment/createComment.html")
-	// 	if err != nil {
-	// 		h.errorLog.Printf("Create Post: Execute:%v", err)
-	// 		return
-	// 	}
-
-	// 	err = ts.Execute(w, nil)
-	// 	if err != nil {
-	// 		h.serverError(w, err)
-	// 		return
-	// 	}
-	// } else
 	if r.Method == "POST" {
 
 		err := r.ParseForm()
@@ -80,7 +68,37 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 // }
 
 func (h *Handler) ListComments(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("UpdatePost из page"))
+	if r.URL.Path != urlComments {
+		h.notFound(w)
+		return
+	}
+
+	if r.Method != "GET" {
+		h.notFound(w)
+		return
+	}
+
+	files := []string{
+		"./ui/templates/comment/comments.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		h.serverError(w, err)
+		return
+	}
+
+	posts, err := h.services.GetAllPosts()
+	if err != nil {
+		h.errorLog.Println(err.Error())
+		h.serverError(w, err)
+		return
+	}
+
+	err = ts.Execute(w, posts)
+	if err != nil {
+		h.serverError(w, err)
+	}
 }
 
 func (h *Handler) LikeComment(w http.ResponseWriter, r *http.Request) {

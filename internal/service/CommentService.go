@@ -9,7 +9,7 @@ import (
 
 type Comment interface {
 	CreateComment(dto dto.CommentDto) error
-	// GetAllCommentsByPostId(postID int64) ([]dto.CommentDto, error)
+	GetAllCommentsByPostId(postID int64) ([]dto.CommentDto, error)
 
 	// GetComment(commentID int64) (dto.CommentDto, error)
 	// GetAllCommentsByUserID(userId int64) ([]dto.CommentDto, error)
@@ -17,11 +17,13 @@ type Comment interface {
 
 type CommentService struct {
 	repo repository.Comment
+	user repository.User
 }
 
-func NewCommentService(repo repository.Comment) *CommentService {
+func NewCommentService(repo repository.Comment, user repository.User) *CommentService {
 	return &CommentService{
 		repo: repo,
+		user: user,
 	}
 }
 
@@ -44,6 +46,20 @@ func (s *CommentService) CreateComment(dto dto.CommentDto) error {
 	return nil
 } // done
 
-// func (s *CommentService) GetAllCommentsByPostId(postID int64) ([]dto.CommentDto, error) {}
+func (s *CommentService) GetAllCommentsByPostId(postID int64) ([]dto.CommentDto, error) {
+	list, err := s.repo.GetAllCommentByPostID(postID)
+	if err != nil {
+		return nil, err
+	}
+
+	var dtoList []dto.CommentDto
+	for _, m := range list {
+		s.user.GetUser(m.ID)
+		dto.GetCommentDto(m)
+	}
+
+	return
+}
+
 // func (s *CommentService) GetComment(commentID int64) (dto.CommentDto, error)            {}
 // func (s *CommentService) GetAllCommentsByUserID(userId int64) ([]dto.CommentDto, error) {}
