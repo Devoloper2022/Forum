@@ -8,19 +8,13 @@ import (
 )
 
 type Category interface {
-	// CreateCategory(Category models.Category) (int, error)
-	// GetAllPosts() ([]models.PostInfo, error)
-	// GetPost(id int) (models.PostInfo, error)
-	// CreatePostCategory(postId int, categories []string) error
-	GetAllCategories() ([]models.Category, error)
 	CreatePostCategory(postId int64, categories []int64) error
-	// GetPostsByMostLikes() ([]models.PostInfo, error)
-	// GetPostsByLeastLikes() ([]models.PostInfo, error)
-	// GetPostByCategory(category string) ([]models.PostInfo, error)
+	GetAllCategories() ([]models.Category, error)
+	GetAllCategoriesByPostId(postId int64) ([]models.Category, error)
 }
 
 func (r *Database) GetAllCategories() ([]models.Category, error) {
-	rows, err := r.db.Query("SELECT Id,Title FROM categories")
+	rows, err := r.db.Query("SELECT * FROM categories")
 	if err != nil {
 		return []models.Category{}, fmt.Errorf("repository : GetAllCategories: %w", err)
 	}
@@ -53,4 +47,51 @@ func (r *Database) CreatePostCategory(postId int64, categories []int64) error {
 		}
 	}
 	return nil
+}
+
+// func (r *Database) CreatePostCategory(postId int64, categories []int64) error {
+// 	query := ("INSERT INTO categoriesPost (PostID,CategoryID) VALUES (?,?)")
+// 	st, err := r.db.Prepare(query)
+// 	if err != nil {
+// 		return fmt.Errorf("repository : create PostCategory  checker 1: %w", err)
+// 	}
+// 	defer st.Close()
+// 	for _, cid := range categories {
+// 		_, err = st.Exec(postId, cid)
+// 		if err != nil {
+// 			return fmt.Errorf("repository : create PostCategory checker 3: %w", err)
+// 		}
+// 	}
+// 	return nil
+// }
+
+func (r *Database) GetAllCategoriesByPostId(postId int64) ([]models.Category, error) {
+	query := ("SELECT categories.ID, categories.Title FROM categories INNER JOIN categoriesPost ON categories.ID = categoriesPost.CategoryID WHERE categoriesPost.PostID = ?")
+	st, err := r.db.Prepare(query)
+	if err != nil {
+		return nil, fmt.Errorf("\nrepository : Get All Categories By PostId  checker 1:\n %w", err)
+	}
+	defer st.Close()
+
+	rows, err := st.Query(postId)
+	if err != nil {
+		return nil, fmt.Errorf("\nrepository : Get All Categories By PostId  checker 2\n: %w", err)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("\nrepository : Get All Categories By PostId  checker 3\n: %w", err)
+	}
+
+	defer rows.Close()
+
+	var list []models.Category
+	for rows.Next() {
+		var cat models.Category
+		if err != rows.Scan(&cat.ID, &cat.Title) {
+			return nil, fmt.Errorf("\n repository : Get All Categories By PostId  checker 4\n: %w", err)
+		}
+		list = append(list, cat)
+	}
+
+	return list, nil
 }

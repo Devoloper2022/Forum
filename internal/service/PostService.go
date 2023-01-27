@@ -34,7 +34,7 @@ func NewPostService(repo repository.Post, categories repository.Category, user r
 }
 
 func (s *PostService) CreatePost(post dto.PostDto, categories []string) (int64, error) {
-	t := time.Now().Format("d MMM yyyy HH:mm:ss")
+	t := time.Now().Format(time.RFC1123)
 
 	newPost := models.Post{
 		Title:   post.Title,
@@ -88,16 +88,18 @@ func (s *PostService) GetPost(postId int64) (dto.PostDto, error) {
 	}
 
 	// user, err := s.user.GetUser(post.UserID) // fix
+	cat, err := s.categories.GetAllCategoriesByPostId(post.ID)
 	if err != nil {
 		return dto.PostDto{}, nil
 	}
 
 	return dto.PostDto{
-		ID:    postId,
-		Title: post.Title,
-		Text:  post.Text,
-		Date:  post.Date,
-		User:  dto.UserDto{},
+		ID:        postId,
+		Title:     post.Title,
+		Text:      post.Text,
+		Date:      post.Date,
+		User:      dto.UserDto{},
+		Categorys: cat,
 	}, nil
 } // fix
 

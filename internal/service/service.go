@@ -7,7 +7,8 @@ import (
 type Service struct {
 	Autorization
 	Post
-	CategoryService
+	Category
+	User
 	// Comment
 	// VotePost
 	// VoteComment
@@ -15,9 +16,10 @@ type Service struct {
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
-		Autorization:    NewAuthService(repos.Autorization),
-		Post:            NewPostService(repos.Post, repos.Category, repos.User),
-		CategoryService: *NewCategoryService(repos.Category),
+		Autorization: NewAuthService(repos.Autorization),
+		Post:         NewPostService(repos.Post, repos.Category, repos.User),
+		Category:     NewCategoryService(repos.Category),
+		User:         NewUserService(repos.User),
 		// Comment:      NewCommentService(repos.Comment),
 		// VotePost:     NewVotePostService(repos.VotePost),
 		// VoteComment:  NewVoteCommentService(repos.VoteComment),

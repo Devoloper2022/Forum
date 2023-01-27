@@ -22,9 +22,12 @@
         <h1 class="logo_text">Dislike: {{ .Dislike}}</h1>
         <h1 class="logo_text" style="text-align: center">Label:</h1>
         
-        <!-- {{range .Categorys}}
-        <h2 class="logo_text">{{ .Title }}</h2>
-        {{end}}         -->
+        {{range .Categorys}}
+        <div>
+            <h2 class="logo_text">{{ .Title }}</h2>
+        </div>
+        
+        {{end}}        
        
     </div>
 

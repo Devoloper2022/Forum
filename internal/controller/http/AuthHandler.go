@@ -2,13 +2,14 @@ package http
 
 import (
 	"fmt"
+	"forum/internal/models"
 	"html/template"
 	"log"
 	"net/http"
 )
 
 func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
+	if r.URL.Path != urlHome {
 		h.notFound(w)
 		return
 	}
@@ -61,7 +62,7 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(email)
 		fmt.Println(pass)
 
-		http.Redirect(w, r, fmt.Sprintf("/"), http.StatusSeeOther)
+		http.Redirect(w, r, fmt.Sprintf(urlHome), http.StatusSeeOther)
 
 	} else {
 		log.Println("Create Post: Method not allowed")
@@ -91,11 +92,27 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 		email := r.PostFormValue("email")
 		username := r.PostFormValue("username")
 		pass := r.PostFormValue("password")
-		fmt.Println(username)
-		fmt.Println(email)
-		fmt.Println(pass)
+		repass := r.PostFormValue("repassw")
+		// fmt.Println(email)
+		// fmt.Println(username)
+		// fmt.Println(pass)
+		// fmt.Println(repass)
+		if email == "" || username == "" || pass == "" || repass == "" || repass != pass {
+			h.clientError(w, 400)
+			return
+		}
 
-		http.Redirect(w, r, fmt.Sprintf("/"), http.StatusSeeOther)
+		err := h.services.CreateUser(models.User{
+			Username: username,
+			Email:    email,
+			Password: pass,
+		})
+		if err != nil {
+			h.serverError(w, err)
+			return
+		}
+
+		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
 
 	} else {
 		log.Println("Create Post: Method not allowed")

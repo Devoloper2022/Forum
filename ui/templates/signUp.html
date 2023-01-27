@@ -9,16 +9,21 @@
 </head>
 <body>
     <h1>Sign Up</h1>
-    <form method="POST" action="/signup"></form>
-    <p>Email</p>
-    <input type="text" name="email">
-    <p>username</p>
-    <input type="text" name="Username">
-    <p>Password</p>
-    <input type="text" name="password">
-    <p>Repeat password</p>
-    <input type="text" name="repassw">
-    <p><button>Confirm</button></p>
+    <form method="POST" action="/signup">
+        <label for="email"><b>Email</b></label><br>
+        <input type="text" name="email"><br>
+    
+        <label for="username"><b>Username</b></label><br>
+        <input type="text" name="username"><br>
+
+        <label for="password"><b>Password</b></label><br>
+        <input type="text" name="password"><br>
+    
+        <label for="repassw"><b>Repeat password</b></label><br>
+        <input type="text" name="repassw"><br>
+        
+        <button type="submit">sign Up</button> 
+
     </form>
     
 </body>
