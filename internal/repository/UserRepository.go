@@ -17,7 +17,7 @@ func (r *Database) CreateUser(user models.User) error {
 	query := ("INSERT INTO users (Username,Email,Password) VALUES (?,?,?)")
 	st, err := r.db.Prepare(query)
 	if err != nil {
-		return fmt.Errorf("repository : create User : %w", err)
+		return err
 	}
 	defer st.Close()
 

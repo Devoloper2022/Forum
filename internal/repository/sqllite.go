@@ -69,9 +69,9 @@ const (
 
 	sesionTable = `CREATE TABLE IF NOT EXISTS sessions(
 			ID INTEGER PRIMARY KEY AUTOINCREMENT,
-			UserID INTEGER,
 			Token TEXT,
 			Expiry TEXT,
+			UserID INTEGER,
 			FOREIGN KEY (UserID) REFERENCES users (ID) ON DELETE CASCADE
 			);`
 	insertCategories = `INSERT OR IGNORE INTO categories(Title) VALUES

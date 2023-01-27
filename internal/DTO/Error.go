@@ -13,6 +13,7 @@ var (
 	ErrInvalidPassword = errors.New("Invalid password")
 	ErrUserNotFound    = errors.New("User not found")
 	ErrUserExist       = errors.New("User exist")
+	ErrUsernameExist   = errors.New("Username exist")
 	ErrEmailExist      = errors.New("Email exist")
 	ErrPasswdNotMatch  = errors.New("Password doesn't match")
 )
