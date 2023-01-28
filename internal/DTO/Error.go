@@ -1,9 +1,12 @@
 package dto
 
-import "errors"
+import (
+	"errors"
+)
 
 type SystemErr struct {
 	Status int
+	Name   string
 	Msg    string
 }
 

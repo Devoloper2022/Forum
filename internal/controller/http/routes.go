@@ -39,39 +39,77 @@ const (
 )
 
 func (h *Handler) Routes() *http.ServeMux {
+	// Security Level
+	m := new(middleware)
+	m.addMidlleware(h.userIdentity)
+	m.addMidlleware(h.logRequest)
+	m.addMidlleware(h.secureHeaders)
+
+	// Router
 	mux := http.NewServeMux()
 
-	mux.HandleFunc(urlHome, h.Home) // for all
+	// mux.HandleFunc(urlHome, m.chain(h.Home)) // for all
 
-	// auth
-	mux.HandleFunc(urlSignUP, h.SignUp)   // for all
-	mux.HandleFunc(urlSignIn, h.SignIn)   // for all
-	mux.HandleFunc(urlRefresh, h.Refresh) // for auth
-	mux.HandleFunc(urlLogout, h.Logout)   // for auth
+	// // auth
+	// mux.HandleFunc(urlSignUP, m.chain(h.SignUp))   // for all
+	// mux.HandleFunc(urlSignIn, m.chain(h.SignIn))   // for all
+	// mux.HandleFunc(urlRefresh, m.chain(h.Refresh)) // for auth
+	// mux.HandleFunc(urlLogout, m.chain(h.Logout))   // for auth
 
-	// User
-	mux.HandleFunc(urlUser, h.GetUser)        // for auth
-	mux.HandleFunc(urlUserProfile, h.profile) // for owner
-	// mux.HandleFunc(urlUserDelete, h.)       	// for owner
-	// mux.HandleFunc(urlUserUpdate, h.)         // for owner
+	// // User
+	// mux.HandleFunc(urlUser, m.chain(h.GetUser))        // for auth
+	// mux.HandleFunc(urlUserProfile, m.chain(h.profile)) // for owner
+	// // mux.HandleFunc(urlUserDelete, h.)       	// for owner
+	// // mux.HandleFunc(urlUserUpdate, h.)         // for owner
 
-	// post
-	mux.HandleFunc(urlPost, h.GetPost)          // for all
-	mux.HandleFunc(urlPosts, h.ListPosts)       // for all
-	mux.HandleFunc(urlPostCreate, h.CreatePost) // for auth
-	mux.HandleFunc(urlPostDelete, h.DeletePost) // for owner
-	mux.HandleFunc(urlPostUpdate, h.UpdatePost) // for owner
-	mux.HandleFunc(urlPostLike, h.LikePost)     // for owner
+	// // post
+	// mux.HandleFunc(urlPost, m.chain(h.GetPost))          // for all
+	// mux.HandleFunc(urlPosts, m.chain(h.ListPosts))       // for all
+	// mux.HandleFunc(urlPostCreate, m.chain(h.CreatePost)) // for auth
+	// mux.HandleFunc(urlPostDelete, m.chain(h.DeletePost)) // for owner
+	// mux.HandleFunc(urlPostUpdate, m.chain(h.UpdatePost)) // for owner
+	// mux.HandleFunc(urlPostLike, m.chain(h.LikePost))     // for owner
 
-	// comment
-	mux.HandleFunc(urlComment, h.GetPost)             // for all
-	mux.HandleFunc(urlComments, h.ListComments)       // for all
-	mux.HandleFunc(urlCommentCreate, h.CreateComment) // for auth
-	mux.HandleFunc(urlCommentDelete, h.DeletePost)    // for owner
-	mux.HandleFunc(urlCommentUpdate, h.UpdatePost)    // for owner
-	mux.HandleFunc(urlCommentLike, h.LikeComment)     // for owner
+	// // comment
+	// mux.HandleFunc(urlComment, m.chain(h.GetPost))             // for all
+	// mux.HandleFunc(urlComments, m.chain(h.ListComments))       // for all
+	// mux.HandleFunc(urlCommentCreate, m.chain(h.CreateComment)) // for auth
+	// mux.HandleFunc(urlCommentDelete, m.chain(h.DeletePost))    // for owner
+	// mux.HandleFunc(urlCommentUpdate, m.chain(h.UpdatePost))    // for owner
+	// mux.HandleFunc(urlCommentLike, m.chain(h.LikeComment))     // for owner
+
+	mux.HandleFunc(urlHome, m.chain(h.Home)) // for all
+
+	// // auth
+	// mux.HandleFunc(urlSignUP, m.chain(h.SignUp))   // for all
+	// mux.HandleFunc(urlSignIn, m.chain(h.SignIn))   // for all
+	// mux.HandleFunc(urlRefresh, m.chain(h.Refresh)) // for auth
+	// mux.HandleFunc(urlLogout, m.chain(h.Logout))   // for auth
+
+	// // User
+	// mux.HandleFunc(urlUser, m.chain(h.GetUser))        // for auth
+	// mux.HandleFunc(urlUserProfile, m.chain(h.profile)) // for owner
+	// // mux.HandleFunc(urlUserDelete, h.)       	// for owner
+	// // mux.HandleFunc(urlUserUpdate, h.)         // for owner
+
+	// // post
+	// mux.HandleFunc(urlPost, m.chain(h.GetPost))          // for all
+	// mux.HandleFunc(urlPosts, m.chain(h.ListPosts))       // for all
+	// mux.HandleFunc(urlPostCreate, m.chain(h.CreatePost)) // for auth
+	// mux.HandleFunc(urlPostDelete, m.chain(h.DeletePost)) // for owner
+	// mux.HandleFunc(urlPostUpdate, m.chain(h.UpdatePost)) // for owner
+	// mux.HandleFunc(urlPostLike, m.chain(h.LikePost))     // for owner
+
+	// // comment
+	// mux.HandleFunc(urlComment, m.chain(h.GetPost))             // for all
+	// mux.HandleFunc(urlComments, m.chain(h.ListComments))       // for all
+	// mux.HandleFunc(urlCommentCreate, m.chain(h.CreateComment)) // for auth
+	// mux.HandleFunc(urlCommentDelete, m.chain(h.DeletePost))    // for owner
+	// mux.HandleFunc(urlCommentUpdate, m.chain(h.UpdatePost))    // for owner
+	// mux.HandleFunc(urlCommentLike, m.chain(h.LikeComment))     // for owner
 
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
+	mux.Handle("/static", http.NotFoundHandler())
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
 	return mux

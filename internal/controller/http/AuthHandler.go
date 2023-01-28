@@ -2,6 +2,7 @@ package http
 
 import (
 	"fmt"
+	dto "forum/internal/DTO"
 	"forum/internal/models"
 	"html/template"
 	"log"
@@ -9,6 +10,10 @@ import (
 )
 
 func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(key).(models.User)
+	if user != (models.User{}) {
+		return
+	}
 	if r.URL.Path != urlHome {
 		h.notFound(w)
 		return
@@ -37,37 +42,6 @@ func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write([]byte("home page"))
-}
-
-func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != urlSignIn {
-		h.notFound(w)
-		return
-	}
-	if r.Method == "GET" {
-		ts, err := template.ParseFiles("./ui/templates/signIn.html")
-		if err != nil {
-			log.Printf("Create Post: Execute:%v", err)
-			return
-		}
-
-		err = ts.Execute(w, nil)
-		if err != nil {
-			h.serverError(w, err)
-			return
-		}
-	} else if r.Method == "POST" {
-		email := r.PostFormValue("email")
-		pass := r.PostFormValue("password")
-		fmt.Println(email)
-		fmt.Println(pass)
-
-		http.Redirect(w, r, fmt.Sprintf(urlHome), http.StatusSeeOther)
-
-	} else {
-		log.Println("Create Post: Method not allowed")
-		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
-	}
 }
 
 func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
@@ -117,11 +91,62 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != urlSignIn {
+		h.notFound(w)
+		return
+	}
+	if r.Method == "GET" {
+		ts, err := template.ParseFiles("./ui/templates/signIn.html")
+		if err != nil {
+			log.Printf("Create Post: Execute:%v", err)
+			return
+		}
+
+		err = ts.Execute(w, nil)
+		if err != nil {
+			h.serverError(w, err)
+			return
+		}
+	} else if r.Method == "POST" {
+		email := r.PostFormValue("email")
+		pass := r.PostFormValue("password")
+
+		if email == "" || pass == "" {
+			h.clientError(w, 400)
+			return
+		}
+
+		cook, err := h.services.Autorization.GenerateToken(dto.Credentials{
+			Username: email,
+			Password: pass,
+		})
+		if err != nil {
+			h.clientError(w, 400)
+			return
+		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:    "token",
+			Value:   cook.Token,
+			Expires: cook.Expiry,
+			Path:    urlHome,
+		})
+
+		http.Redirect(w, r, fmt.Sprintf(urlHome), http.StatusSeeOther)
+
+	} else {
+		log.Println("Create Post: Method not allowed")
+		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
+	}
+}
+
 func (h *Handler) Refresh(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != urlRefresh {
 		h.notFound(w)
 		return
 	}
+
 	w.Write([]byte("Refresh page"))
 }
 
