@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CreatePost | Forum</title>
-    <link rel="stylesheet" href="./post.css" type="text/css">
+    <link rel="stylesheet" href="../../static/style/signUp.css" type="text/css">
 </head>
 <body>
     <div>
@@ -14,7 +14,7 @@
         <label for="title"><b>Title</b></label><br>
         <input type="text" name="title"><br>
         <label for="content"><b>Content</b></label><br>
-        <textarea rows="10" cols="30" name="text"></textarea><br>
+        <textarea rows="15" cols="60" name="text"></textarea><br>
         
         <label for="categories">Categories</label><br>
         <select size="3" multiple id="categories "name="categories">
@@ -22,8 +22,10 @@
           <option value="{{.ID}}">{{.Title}}</option>
           {{end}}
         </select><br>
-        <button type="submit">Create</button> 
+        
     </form>
+    <a href="/"><button class="button-23">Home</button></a>
+    <button type="submit" class="button-23">Create</button> 
 </div>
     
 </body>
