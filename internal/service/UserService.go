@@ -26,11 +26,11 @@ func NewUserService(user repository.User) *UserService {
 }
 
 func (s *UserService) CreateUser(user models.User) error {
-	validEmail, err := regexp.MatchString(`[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$`, user.Email)
+	validEmail, err := regexp.MatchString(mailValidation, user.Email)
 	if err != nil {
 		return err
 	} else if !validEmail {
-		return dto.ErrInvalidEmail
+		return dto.ErrEmailInvalid
 	}
 
 	hash, err := generatePasswordHash(user.Password)

@@ -1,38 +1,82 @@
 package service
 
 import (
-	"errors"
+	dto "forum/internal/DTO"
 	"forum/internal/models"
 	"forum/internal/repository"
+	"regexp"
+	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var (
-	ErrInvalidEmail    = errors.New("Invalid email")
-	ErrInvalidUsername = errors.New("Invalid username")
-	ErrInvalidPassword = errors.New("Invalid password")
-	ErrUserNotFound    = errors.New("User not found")
-	ErrUserExist       = errors.New("User exist")
-)
-
 type Autorization interface {
-	CreateAuth(user models.User) error
-	// GenerateToken(username, password string) (string, time.Time, error)
-	// ParseToken(token string) (models.User, error)
-	// DeleteToken(token string) error
+	GenerateToken(login dto.Credentials) (dto.Cook, error)
+	ParseToken(token string) (models.User, error)
+	DeleteToken(token string) error
+	DeleteTokenWhenExpireTime() error
 }
 
 type AuthService struct {
-	repo repository.Autorization
+	auth repository.Autorization
+	user repository.User
 }
 
-func NewAuthService(repo repository.Autorization) *AuthService {
-	return &AuthService{repo: repo}
+func NewAuthService(auth repository.Autorization, user repository.User) *AuthService {
+	return &AuthService{
+		auth: auth,
+		user: user,
+	}
 }
 
-func (s *AuthService) CreateAuth(user models.User) error {
-	return nil
+func (s *AuthService) GenerateToken(login dto.Credentials) (dto.Cook, error) {
+	var user models.User
+	validEmail, err := regexp.MatchString(mailValidation, user.Email)
+
+	if err != nil {
+		return dto.Cook{}, err
+	} else if validEmail {
+		user, err = s.user.GetUserByEmail(login.Username)
+		if err != nil {
+			return dto.Cook{}, dto.ErrUserNotFound
+		}
+	} else {
+		user, err = s.user.GetUserByUsername(login.Username)
+		if err != nil {
+			return dto.Cook{}, dto.ErrUserNotFound
+		}
+	}
+
+	if err := checkHash(user.Password, login.Password); err != nil {
+		return dto.Cook{}, dto.ErrPasswdNotMatch
+	}
+
+	cook := dto.Cook{
+		Token:  uuid.NewString(),
+		Expiry: time.Now().Add(15 * time.Minute),
+	}
+
+	if err := s.auth.SaveToken(user.ID, cook.Token, cook.Expiry); err != nil {
+		return dto.Cook{}, err
+	}
+	return cook, nil
+}
+
+func (s *AuthService) ParseToken(token string) (models.User, error) {
+	user, err := s.user.GetUserByToken(token)
+	if err != nil {
+		return models.User{}, err
+	}
+	return user, nil
+}
+
+func (s *AuthService) DeleteToken(token string) error {
+	return s.auth.DeleteToken(token)
+}
+
+func (s *AuthService) DeleteTokenWhenExpireTime() error {
+	return s.auth.DeleteTokenWhenExpireTime()
 }
 
 func checkHash(hpass, password string) error {

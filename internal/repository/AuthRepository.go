@@ -2,13 +2,11 @@ package repository
 
 import (
 	"fmt"
-	"forum/internal/models"
 	"time"
 )
 
 type Autorization interface {
 	SaveToken(userID int64, sessionToken string, time time.Time) error
-	GetUserByToken(token string) (models.User, error)
 	DeleteToken(token string) error
 	DeleteTokenWhenExpireTime() error
 }
@@ -27,23 +25,6 @@ func (r *Database) SaveToken(userID int64, sessionToken string, time time.Time) 
 		return err
 	}
 	return nil
-}
-
-func (r *Database) GetUserByToken(token string) (models.User, error) {
-	query := ("SELECT users.ID, users.Username ,user.Email  , users.Password FROM users  INNER JOIN sessions users.ID = sessions.UserID WHERE sessions.Token = ?")
-	st, err := r.db.Prepare(query)
-	defer st.Close()
-
-	if err != nil {
-		return models.User{}, fmt.Errorf("repository : Get User By Token  checker 1: %w", err)
-	}
-
-	row := st.QueryRow(token)
-	var user models.User
-	if err = row.Scan(&user.ID, &user.Username, &user.Email, &user.Password); err != nil {
-		return models.User{}, err
-	}
-	return user, nil
 }
 
 func (r *Database) DeleteToken(token string) error {

@@ -4,6 +4,8 @@ import (
 	"forum/internal/repository"
 )
 
+const mailValidation = `[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$`
+
 type Service struct {
 	Autorization
 	Post
@@ -16,7 +18,7 @@ type Service struct {
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
-		Autorization: NewAuthService(repos.Autorization),
+		Autorization: NewAuthService(repos.Autorization, repos.User),
 		Post:         NewPostService(repos.Post, repos.Category, repos.User),
 		Category:     NewCategoryService(repos.Category),
 		User:         NewUserService(repos.User),

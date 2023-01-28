@@ -8,12 +8,19 @@ type SystemErr struct {
 }
 
 var (
-	ErrInvalidEmail    = errors.New("Invalid email")
-	ErrInvalidUsername = errors.New("Invalid username")
-	ErrInvalidPassword = errors.New("Invalid password")
-	ErrUserNotFound    = errors.New("User not found")
-	ErrUserExist       = errors.New("User exist")
+	// user error
+	ErrUserNotFound = errors.New("User not found")
+	ErrUserExist    = errors.New("User exist")
+
+	// email error
+	ErrEmailInvalid = errors.New("Invalid email")
+	ErrEmailExist   = errors.New("Email exist")
+
+	// username error
 	ErrUsernameExist   = errors.New("Username exist")
-	ErrEmailExist      = errors.New("Email exist")
+	ErrUsernameInvalid = errors.New("Invalid username")
+
+	// password error
+	ErrPasswordInvalid = errors.New("Invalid password")
 	ErrPasswdNotMatch  = errors.New("Password doesn't match")
 )

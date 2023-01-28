@@ -93,10 +93,7 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 		username := r.PostFormValue("username")
 		pass := r.PostFormValue("password")
 		repass := r.PostFormValue("repassw")
-		// fmt.Println(email)
-		// fmt.Println(username)
-		// fmt.Println(pass)
-		// fmt.Println(repass)
+
 		if email == "" || username == "" || pass == "" || repass == "" || repass != pass {
 			h.clientError(w, 400)
 			return

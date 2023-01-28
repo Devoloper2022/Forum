@@ -10,6 +10,9 @@ type User interface {
 	GetUser(userId int64) (models.User, error)
 	// UpdateUser(user models.User) error
 	// DeleteUser(userID int64) error
+	GetUserByToken(token string) (models.User, error)
+	GetUserByUsername(username string) (models.User, error)
+	GetUserByEmail(email string) (models.User, error)
 }
 
 // main functions
@@ -44,5 +47,58 @@ func (r *Database) GetUser(userId int64) (models.User, error) {
 		return models.User{}, err
 	}
 
+	return user, nil
+}
+
+func (r *Database) GetUserByUsername(username string) (models.User, error) {
+	query := ("SELECT * FROM users WHERE Username = ?")
+	st, err := r.db.Prepare(query)
+	if err != nil {
+		return models.User{}, fmt.Errorf("repository : Get Post  checker 1: %w", err)
+	}
+	defer st.Close()
+
+	row := st.QueryRow(username)
+
+	var user models.User
+	if err = row.Scan(&user.ID, &user.Username, &user.Email, &user.Password); err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}
+
+func (r *Database) GetUserByEmail(email string) (models.User, error) {
+	query := ("SELECT * FROM users WHERE Email = ?")
+	st, err := r.db.Prepare(query)
+	if err != nil {
+		return models.User{}, fmt.Errorf("repository : Get Post  checker 1: %w", err)
+	}
+	defer st.Close()
+
+	row := st.QueryRow(email)
+
+	var user models.User
+	if err = row.Scan(&user.ID, &user.Username, &user.Email, &user.Password); err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}
+
+func (r *Database) GetUserByToken(token string) (models.User, error) {
+	query := ("SELECT users.ID, users.Username ,user.Email  , users.Password FROM users  INNER JOIN sessions users.ID = sessions.UserID WHERE sessions.Token = ?")
+	st, err := r.db.Prepare(query)
+	defer st.Close()
+
+	if err != nil {
+		return models.User{}, fmt.Errorf("repository : Get User By Token  checker 1: %w", err)
+	}
+
+	row := st.QueryRow(token)
+	var user models.User
+	if err = row.Scan(&user.ID, &user.Username, &user.Email, &user.Password); err != nil {
+		return models.User{}, err
+	}
 	return user, nil
 }

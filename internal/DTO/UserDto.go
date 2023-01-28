@@ -1,6 +1,9 @@
 package dto
 
-import "forum/internal/models"
+import (
+	"forum/internal/models"
+	"time"
+)
 
 type UserDto struct {
 	ID       int64  `json:"-"`
@@ -19,6 +22,16 @@ func GetUserDto(u models.User) UserDto {
 		ID:       u.ID,
 		Username: u.Username,
 	}
+}
+
+type Credentials struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type Cook struct {
+	Token  string    `json:"Token"`
+	Expiry time.Time `json:"Expiry"`
 }
 
 // type ProfileDto struct {
