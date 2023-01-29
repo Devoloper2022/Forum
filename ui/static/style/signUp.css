@@ -12,6 +12,10 @@ input {
     border-radius: 10px;
 }
 
+a {
+  text-decoration: none;
+}
+
 .buttons{
     padding: 10px;
 }
