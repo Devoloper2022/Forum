@@ -12,8 +12,7 @@ type Service struct {
 	Category
 	User
 	Comment
-	// VotePost
-	// VoteComment
+	Like
 }
 
 func NewService(repos *repository.Repository) *Service {
@@ -23,7 +22,6 @@ func NewService(repos *repository.Repository) *Service {
 		Category:     NewCategoryService(repos.Category),
 		User:         NewUserService(repos.User),
 		Comment:      NewCommentService(repos.Comment, repos.User),
-		// VotePost:     NewVotePostService(repos.VotePost),
-		// VoteComment:  NewVoteCommentService(repos.VoteComment),
+		Like:         NewLikeService(repos.Like, repos.Comment, repos.Post),
 	}
 }

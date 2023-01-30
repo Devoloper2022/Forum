@@ -7,21 +7,21 @@ import (
 
 type Like interface {
 	//Comments Likes
-	createCommentLike(modele models.CommentLike) (models.CommentLike, error)
+	CreateCommentLike(modele models.CommentLike) (models.CommentLike, error)
 	UpdateCommentLike(modele models.CommentLike) (models.CommentLike, error)
-	UpdateCommentL(id int64, like, dislike int) (models.Comment, error)
+	UpdateCommentL(id int64, like, dislike int64) error
 	GetCommentLike(id int64) (models.CommentLike, error)
 	DeleteCommentLike(id int64) error
 	//post Likes
-	createPostLike(modele models.PostLike) (models.PostLike, error)
+	CreatePostLike(modele models.PostLike) (models.PostLike, error)
 	UpdatePostLike(modele models.PostLike) (models.PostLike, error)
-	UpdatePostL(id int64, like, dislike int) (models.Post, error)
+	UpdatePostL(id int64, like, dislike int64) (models.Post, error)
 	GetPostLike(id int64) (models.PostLike, error)
 	DeletePostLike(id int64) error
 }
 
 // Comment Likes
-func (r *Database) createCommentLike(modele models.CommentLike) (models.CommentLike, error) {
+func (r *Database) CreateCommentLike(modele models.CommentLike) (models.CommentLike, error) {
 	query := ("INSERT INTO commentLike (UserID,CommentID,Like,Dislike) VALUES (?,?,?,?)")
 	st, err := r.db.Prepare(query)
 	defer st.Close()
@@ -57,23 +57,22 @@ func (r *Database) UpdateCommentLike(modele models.CommentLike) (models.CommentL
 
 	return newModele, nil
 }
-func (r *Database) UpdateCommentL(id int64, like, dislike int) (models.Comment, error) {
+func (r *Database) UpdateCommentL(id int64, like, dislike int64) error {
 	query := ("UPDATE comments SET Like=?,Dislike=? WHERE  ID = ?")
 	st, err := r.db.Prepare(query)
 	defer st.Close()
 
 	if err != nil {
-		return models.Comment{}, fmt.Errorf("repository : Update Comment L : %w", err)
+		return fmt.Errorf("repository : Update Comment L : %w", err)
 	}
 
-	row := st.QueryRow(like, dislike, id)
-	var newModele models.Comment
+	_, err = st.Exec(like, dislike, id)
 
-	if err = row.Scan(&newModele.ID, &newModele.Text, &newModele.Date, &newModele.Like, &newModele.Dislike, &newModele.UserID, &newModele.PostID); err != nil {
-		return models.Comment{}, err
+	if err != nil {
+		return err
 	}
 
-	return newModele, nil
+	return nil
 }
 func (r *Database) GetCommentLike(id int64) (models.CommentLike, error) {
 	query := ("SELECT * FROM commentLike WHERE ID = ?")
@@ -111,7 +110,7 @@ func (r *Database) DeleteCommentLike(id int64) error {
 
 //Post Likes
 
-func (r *Database) createPostLike(modele models.PostLike) (models.PostLike, error) {
+func (r *Database) CreatePostLike(modele models.PostLike) (models.PostLike, error) {
 	query := ("INSERT INTO postLike (UserID,PostID,Like,Dislike) VALUES (?,?,?,?)")
 	st, err := r.db.Prepare(query)
 	defer st.Close()
@@ -147,7 +146,7 @@ func (r *Database) UpdatePostLike(modele models.PostLike) (models.PostLike, erro
 
 	return newModele, nil
 }
-func (r *Database) UpdatePostL(id int64, like, dislike int) (models.Post, error) {
+func (r *Database) UpdatePostL(id int64, like, dislike int64) (models.Post, error) {
 	query := ("UPDATE posts SET Like=?,Dislike=? WHERE  ID = ?")
 	st, err := r.db.Prepare(query)
 	defer st.Close()
