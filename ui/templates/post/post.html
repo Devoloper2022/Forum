@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreatePost | Forum</title>
+    <link rel="stylesheet" href="../../static/style/addPost.css" type="text/css">
+</head>
+<body>
+    <div class="wrapper">
+    <h1>all Post</h1>
+
+
+
+    <div>
+        <div>
+            <a href="/post/update"><button disabled>Edit</button></a>
+            <a href="/post/delete"><button disabled>Delete</button></a>
+            <form method="GET" action="/comment/create?id={{ .ID}}">
+                <button>Comment</button>
+            </form>
+
+        </div>
+        <h1 class="logo_title">{{ .Title }}</h1>
+        <h2 class="logo_text">{{ .Text }} Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aliquam laborum deleniti corrupti et id assumenda? Asperiores corporis expedita, obcaecati eius velit laborum, officiis fugiat eligendi nesciunt ab molestiae, reiciendis cumque.</h2>
+        <h3 class="logo_like">Like: {{ .Like }} {{ .Dislike }}</h3>
+        <h3 class="logo_date">Creation Date: {{ .Date}}</h3>
+        <h1 class="logo_username">Author:  <a href="/user?id={{ .User.ID}}" >  {{ .User.Username}}</a></h1>
+        
+        <h1 class="logo_label" style="text-align: center">Label:</h1>
+        
+        {{range .Categorys}}
+        <div>
+            <h2 class="logo_id"> <a href="/user?id={{ .ID}}" >  {{ .Title }}</a></h2>
+            <h2 class="logo_id"></h2>
+        </div>
+        
+        {{end}}        
+       
+    </div>
+  <a href="/comments/all?id={{ .ID}}" >  View comments</a>
+
+    <form method="POST" action="/comment/create">
+        <input type="hidden" name ="postId"value="{{.ID}}">
+       
+        <label for="text"><b>Comment</b></label><br>
+        <textarea rows="10" cols="30" name="text"></textarea><br>
+        
+        <button type="submit" class="button-23">Send</button>
+        <button href="/" class="button-23">Home</button>  
+    </form>
+
+
+
+</div>
+</body>
+</html>

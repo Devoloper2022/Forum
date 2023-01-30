@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum</title>
+    <link rel="stylesheet" href="../static/style/signUp.css" type="text/css">
+</head>
+
+<body>
+    <h1>Sign In</h1>
+    <form method="POST" action="/signin">
+        <label for="email"><b>Email</b></label><br>
+        <input type="text" name="email"><br>
+
+        <label for="password"><b>Password</b></label><br>
+        <input type="text" name="password"><br>
+
+        <button type="submit" class="button-23">Confirm</button>
+    </form>
+    <div class="buttons">
+        
+        <h3>Failed to login?</h3>
+        <a href="/"><button class="button-23">Home</button></a>
+        <a href="/signup"><button class="button-23">Sign Up</button></a>
+    </div>
+
+
+</body>
+
+</html>
