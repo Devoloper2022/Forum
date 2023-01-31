@@ -20,7 +20,8 @@ const (
 	// urlPostUpdate = "/post/update"
 	urlPost = "/post/"
 	// urlPosts    = "/post/all"
-	urlPostLike = "/post/like"
+	urlPostLike    = "/post/like"
+	urlPostDislike = "/post/dislike"
 
 	urlFilterCategory = "/filter/category/"
 	urlFilterLike     = "/filter/like"
@@ -37,8 +38,9 @@ const (
 	// urlCommentDelete = "/comment/delete"
 	// urlCommentUpdate = "/comment/update "
 	// urlComment     = "/comment/"
-	urlComments    = "/comments/all/"
-	urlCommentLike = "/comment/like"
+	urlComments       = "/comments/all/"
+	urlCommentLike    = "/comment/like"
+	urlCommentDislike = "/comment/dislike"
 )
 
 func (h *Handler) Routes() *http.ServeMux {
