@@ -39,7 +39,7 @@ func (s *LikeService) LikeComment(data models.CommentLike) error {
 		return err
 	}
 
-	modelLike, err := s.repo.GetCommentLike(data.CommentID, data.UserID)
+	modelLike, err := s.repo.GetCommentLike(data.UserID, data.CommentID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			err = s.repo.CreateCommentLike(data)
@@ -151,7 +151,7 @@ func (s *LikeService) DislikeComment(data models.CommentLike) error {
 		return err
 	}
 
-	modelLike, err := s.repo.GetCommentLike(data.CommentID, data.UserID)
+	modelLike, err := s.repo.GetCommentLike(data.UserID, data.CommentID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			err = s.repo.CreateCommentLike(data)

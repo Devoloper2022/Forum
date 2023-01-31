@@ -68,7 +68,7 @@ func (r *Database) UpdateCommentTable(id int64, like, dislike int64) error {
 }
 
 func (r *Database) GetCommentLike(userID, commentID int64) (models.CommentLike, error) {
-	query := ("SELECT * FROM commentLike WHERE commentID = ? AND userID=?")
+	query := ("SELECT * FROM commentLike WHERE commentID = ? AND userID = ?")
 	st, err := r.db.Prepare(query)
 	defer st.Close()
 

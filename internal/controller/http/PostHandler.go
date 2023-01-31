@@ -8,12 +8,14 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(key).(models.User)
 	if user == (models.User{}) {
 		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+		return
 	}
 	if r.URL.Path != urlPostCreate {
 		h.notFound(w)
@@ -29,14 +31,13 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 		categories, err := h.services.GetAllCategories()
 		if err != nil {
-			h.errorLog.Println(err.Error())
-			h.serverError(w, err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 
 		err = ts.Execute(w, categories)
 		if err != nil {
-			h.serverError(w, err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 	} else if r.Method == "POST" {
@@ -47,7 +48,11 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		title := r.PostFormValue("title")
+		title = strings.ReplaceAll(title, " ", "")
+
 		text := r.PostFormValue("text")
+		text = strings.ReplaceAll(text, " ", "")
+
 		categories := r.Form["categories"]
 
 		if title == "" || text == "" || categories == nil {
@@ -57,7 +62,7 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 		pid, err := h.services.CreatePost(dto.PostDto{Title: title, Text: text, User: dto.UserDto{ID: user.ID}}, categories)
 		if err != nil {
-			h.serverError(w, err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 
@@ -203,6 +208,7 @@ func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(key).(models.User)
 	if user == (models.User{}) {
 		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+		return
 	}
 
 	if r.URL.Path != urlPostLike {
@@ -243,8 +249,7 @@ func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 		})
 
 		if err != nil {
-			h.errorLog.Println(err.Error())
-			h.serverError(w, err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 		http.Redirect(w, r, fmt.Sprintf("/post?id=%d", pid), http.StatusSeeOther)
@@ -258,6 +263,7 @@ func (h *Handler) DislikePost(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(key).(models.User)
 	if user == (models.User{}) {
 		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+		return
 	}
 
 	if r.URL.Path != urlPostDislike {
@@ -298,8 +304,7 @@ func (h *Handler) DislikePost(w http.ResponseWriter, r *http.Request) {
 		})
 
 		if err != nil {
-			h.errorLog.Println(err.Error())
-			h.serverError(w, err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 		http.Redirect(w, r, fmt.Sprintf("/post?id=%d", pid), http.StatusSeeOther)
@@ -308,15 +313,3 @@ func (h *Handler) DislikePost(w http.ResponseWriter, r *http.Request) {
 		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
 	}
 }
-
-// func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
-// 	user := r.Context().Value(key).(models.User)
-// 	if user == (models.User{}) {
-// 		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
-// 	}
-// 	w.Write([]byte("UpdatePost из page"))
-// }
-
-// func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
-// 	w.Write([]byte("DeletePost из page"))
-// }

@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -21,20 +22,18 @@ func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 	categories, err := h.services.GetAllCategories()
 	if err != nil {
-		h.errorLog.Println(err.Error())
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 
 	posts, err := h.services.GetAllPosts()
 	if err != nil {
-		h.errorLog.Println(err.Error())
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 
@@ -43,7 +42,7 @@ func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 		Post: posts,
 	})
 	if err != nil {
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 }
 
@@ -53,40 +52,54 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, urlHome, http.StatusSeeOther)
 	}
 	if r.URL.Path != urlSignUP {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 
 	if r.Method == "GET" {
 		ts, err := template.ParseFiles("./ui/templates/signUp.html")
 		if err != nil {
-			log.Printf("Create Post: Execute:%v", err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 
 		err = ts.Execute(w, nil)
 		if err != nil {
-			h.serverError(w, err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 	} else if r.Method == "POST" {
-		email := r.PostFormValue("email")
-		username := r.PostFormValue("username")
-		pass := r.PostFormValue("password")
-		repass := r.PostFormValue("repassw")
 
-		if email == "" || username == "" || pass == "" || repass == "" || repass != pass {
-			h.clientError(w, 400)
+		err := r.ParseForm()
+		if err != nil {
+			h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
 			return
 		}
 
-		err := h.services.CreateUser(models.User{
+		email := r.PostFormValue("email")
+		email = strings.ReplaceAll(email, " ", "")
+
+		username := r.PostFormValue("username")
+		username = strings.ReplaceAll(username, " ", "")
+
+		pass := r.PostFormValue("password")
+		pass = strings.ReplaceAll(pass, " ", "")
+
+		repass := r.PostFormValue("repassw")
+		repass = strings.ReplaceAll(repass, " ", "")
+
+		if email == "" || username == "" || pass == "" || repass == "" || repass != pass {
+			h.errorHandler(w, http.StatusBadRequest, "Not valid input ")
+			return
+		}
+
+		err = h.services.CreateUser(models.User{
 			Username: username,
 			Email:    email,
 			Password: pass,
 		})
 		if err != nil {
-			h.serverError(w, err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 
@@ -104,27 +117,36 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, urlHome, http.StatusSeeOther)
 	}
 	if r.URL.Path != urlSignIn {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 	if r.Method == "GET" {
 		ts, err := template.ParseFiles("./ui/templates/signIn.html")
 		if err != nil {
-			log.Printf("Create Post: Execute:%v", err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 
 		err = ts.Execute(w, nil)
 		if err != nil {
-			h.serverError(w, err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 	} else if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
+			return
+		}
+
 		email := r.PostFormValue("email")
+		email = strings.ReplaceAll(email, " ", "")
+
 		pass := r.PostFormValue("password")
+		pass = strings.ReplaceAll(pass, " ", "")
 
 		if email == "" || pass == "" {
-			h.clientError(w, 400)
+			h.errorHandler(w, http.StatusBadRequest, "Not valid input ")
 			return
 		}
 
@@ -133,7 +155,7 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 			Password: pass,
 		})
 		if err != nil {
-			h.clientError(w, 400)
+			h.errorHandler(w, http.StatusBadRequest, "Not valid input ")
 			return
 		}
 

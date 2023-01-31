@@ -8,12 +8,14 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(key).(models.User)
 	if user == (models.User{}) {
 		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+		return
 	}
 
 	if r.URL.Path != urlCommentCreate {
@@ -25,11 +27,13 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 
 		err := r.ParseForm()
 		if err != nil {
-			h.errorLog.Printf("error parse form:%v", err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 
 		text := r.PostFormValue("text")
+		text = strings.ReplaceAll(text, " ", "")
+
 		postId := r.PostFormValue("postId")
 		id, err := strconv.Atoi(postId)
 
@@ -49,7 +53,7 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 			PostID: int64(id),
 		})
 		if err != nil {
-			h.serverError(w, err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 
@@ -59,18 +63,6 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
 	}
 }
-
-// func (h *Handler) UpdateComment(w http.ResponseWriter, r *http.Request) {
-// 	w.Write([]byte("UpdatePost из page"))
-// }
-
-// func (h *Handler) DeleteComment(w http.ResponseWriter, r *http.Request) {
-// 	w.Write([]byte("UpdatePost из page"))
-// }
-
-// func (h *Handler) GetComment(w http.ResponseWriter, r *http.Request) {
-// 	w.Write([]byte("UpdatePost из page"))
-// }
 
 func (h *Handler) ListComments(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != urlComments {
@@ -95,20 +87,19 @@ func (h *Handler) ListComments(w http.ResponseWriter, r *http.Request) {
 
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 
 	comments, err := h.services.Comment.GetAllCommentsByPostId(int64(id))
 	if err != nil {
-		h.errorLog.Println(err.Error())
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 
 	err = ts.Execute(w, comments)
 	if err != nil {
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 }
 
@@ -116,6 +107,7 @@ func (h *Handler) LikeComment(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(key).(models.User)
 	if user == (models.User{}) {
 		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+		return
 	}
 
 	if r.URL.Path != urlCommentLike {
@@ -165,8 +157,7 @@ func (h *Handler) LikeComment(w http.ResponseWriter, r *http.Request) {
 		})
 
 		if err != nil {
-			h.errorLog.Println(err.Error())
-			h.serverError(w, err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 
@@ -181,6 +172,7 @@ func (h *Handler) DislikeComment(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(key).(models.User)
 	if user == (models.User{}) {
 		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+		return
 	}
 
 	if r.URL.Path != urlCommentDislike {
@@ -203,7 +195,7 @@ func (h *Handler) DislikeComment(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		commentId := r.PostFormValue("postId")
+		commentId := r.PostFormValue("commentId")
 
 		cid, err := strconv.Atoi(commentId)
 
@@ -230,8 +222,7 @@ func (h *Handler) DislikeComment(w http.ResponseWriter, r *http.Request) {
 		})
 
 		if err != nil {
-			h.errorLog.Println(err.Error())
-			h.serverError(w, err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 		http.Redirect(w, r, fmt.Sprintf("/comments/all?id=%d", pid), http.StatusSeeOther)
