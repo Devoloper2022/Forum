@@ -13,6 +13,7 @@ a{
 
 .wrapper {
   text-align: center;
+  padding: 20px;
 }
 
 .logo_text{
@@ -20,7 +21,10 @@ a{
   background-color: white;
   width: 80%;
   margin-left: 10%;
-
+  border-radius: 10px;
+  height: 200px;
+  text-align: justify;
+  padding: 20px;
 }
 
 

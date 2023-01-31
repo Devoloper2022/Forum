@@ -14,10 +14,9 @@
         <ul class="ulHeader">
             <li><a href="/">Home</a></li>
             <li><a href="/post/create">New Posts</a></li>
-            <li><a href="/post/all">All Post</a></li>
             <li style="float:right"><a href="/logout">Exit</a></li>
-            <li style="float:right"><a href="/signup">Sign Up</a></li>
-            <li style="float:right"><a href="/signin">Sign In</a></li>
+            <li style="float:right"><a href="/signup" class="sign">Sign Up</a></li>
+            <li style="float:right"><a href="/signin" class="sign">Sign In</a></li>
         </ul>
     </header>
     <div class="wrapper">
@@ -39,16 +38,24 @@
 
         <div class="container">
             <div>
-                <h1 class="title">Pasts</h1>
+                <h1 class="title">Posts</h1>
             </div>
 
             <div class="grid-container">
                 {{range .Post}}
                 <div class="card">
+                   
                     <a href="/post?id={{ .ID}}">
 
                         <h1>
-                            {{ .Title }}
+                            
+                            TItle: {{ .Title }}
+                        </h1>
+                    </a>
+                    <a href="/post?id={{ .ID}}">
+                     
+                        <h1>
+                           Post: {{ .Text }}
                         </h1>
                     </a>
                 </div>
@@ -59,9 +66,9 @@
     </div>
     <script>
 
-        var list = document.querySelector('ul');
+        var list = document.querySelector('ulNavbar');
         list.addEventListener('click', function (ev) {
-            if (ev.target.tagName === 'LI') {
+            if (ev.target.tagName === 'li') {
                 ev.target.classList.toggle('checked');
             }
         }, false);
