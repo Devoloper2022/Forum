@@ -1,18 +1,12 @@
 ////////////////Hgs
 
-# FROM golang:1.19-alpine AS builder
-# WORKDIR /forum
+FROM golang:latest AS builder
+WORKDIR /app
+COPY . .
+RUN GOOS=linux go build -o main ./cmd/main.go
+FROM ubuntu:20.04
+WORKDIR /app
 
-# COPY . .
-
-# RUN go mod tidy
-# RUN apk add build-base && go build  cmd/main.go
-
-
-# FROM alpine
-# WORKDIR /forum
-# COPY --from=builder /forum .
-# LABEL maintainers = "HgCl2 && aleebeg && Alfarabi09"
-# LABEL version = "1.0.0"
-# EXPOSE 4888
-# CMD ["/forum/main"]
+COPY --from=builder /app .
+EXPOSE 4000
+CMD ["./main"]
