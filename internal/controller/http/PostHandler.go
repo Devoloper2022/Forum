@@ -48,14 +48,14 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		title := r.PostFormValue("title")
-		title = strings.ReplaceAll(title, " ", "")
+		title1 := strings.ReplaceAll(title, " ", "")
 
 		text := r.PostFormValue("text")
-		text = strings.ReplaceAll(text, " ", "")
+		text1 := strings.ReplaceAll(text, " ", "")
 
 		categories := r.Form["categories"]
 
-		if title == "" || text == "" || categories == nil {
+		if title1 == "" || text1 == "" || categories == nil {
 			h.clientError(w, 400)
 			return
 		}

@@ -32,7 +32,7 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		}
 
 		text := r.PostFormValue("text")
-		text = strings.ReplaceAll(text, " ", "")
+		text1 := strings.ReplaceAll(text, " ", "")
 
 		postId := r.PostFormValue("postId")
 		id, err := strconv.Atoi(postId)
@@ -42,7 +42,7 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if text == "" {
+		if text1 == "" {
 			h.clientError(w, 400)
 			return
 		}
