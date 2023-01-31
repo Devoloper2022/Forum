@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	dto "forum/internal/DTO"
+	"forum/internal/models"
 	"html/template"
 	"log"
 	"net/http"
@@ -10,6 +11,11 @@ import (
 )
 
 func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(key).(models.User)
+	if user == (models.User{}) {
+		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+	}
+
 	if r.URL.Path != urlCommentCreate {
 		h.notFound(w)
 		return
@@ -36,11 +42,10 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 			h.clientError(w, 400)
 			return
 		}
-		var userID int64 = 1 /// DEL
 
 		err = h.services.Comment.CreateComment(dto.CommentDto{
 			Text:   text,
-			User:   dto.UserDto{ID: userID},
+			User:   dto.UserDto{ID: user.ID},
 			PostID: int64(id),
 		})
 		if err != nil {
@@ -68,10 +73,10 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 // }
 
 func (h *Handler) ListComments(w http.ResponseWriter, r *http.Request) {
-	// if r.URL.Path != urlComments {
-	// 	h.notFound(w)
-	// 	return
-	// }
+	if r.URL.Path != urlComments {
+		h.notFound(w)
+		return
+	}
 
 	if r.Method != "GET" {
 		h.notFound(w)
@@ -108,5 +113,9 @@ func (h *Handler) ListComments(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) LikeComment(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(key).(models.User)
+	if user == (models.User{}) {
+		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+	}
 	w.Write([]byte("UpdatePost из page"))
 }
