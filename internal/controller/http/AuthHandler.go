@@ -24,6 +24,12 @@ func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 		h.serverError(w, err)
 		return
 	}
+	categories, err := h.services.GetAllCategories()
+	if err != nil {
+		h.errorLog.Println(err.Error())
+		h.serverError(w, err)
+		return
+	}
 
 	posts, err := h.services.GetAllPosts()
 	if err != nil {
@@ -32,12 +38,13 @@ func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = ts.Execute(w, posts)
+	err = ts.Execute(w, dto.Index{
+		List: categories,
+		Post: posts,
+	})
 	if err != nil {
 		h.serverError(w, err)
 	}
-
-	w.Write([]byte("home page"))
 }
 
 func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {

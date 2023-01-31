@@ -12,9 +12,12 @@ import (
 type Post interface {
 	CreatePost(dto dto.PostDto, categories []string) (int64, error)
 	GetAllPosts() ([]dto.PostDto, error)
-	GetAllPostsByUserID(userId int64) ([]dto.PostDto, error)
 	GetPost(postId int64) (dto.PostDto, error)
 	UpdatePost(post dto.PostDto) error
+	// filters
+	GetAllPostsByUserID(userId int64) ([]dto.PostDto, error)
+	GetAllPostsByCategory(catId int64) ([]dto.PostDto, error)
+	GetAllPostsByLike(t string) ([]dto.PostDto, error)
 }
 
 type PostService struct {
@@ -123,6 +126,45 @@ func (s *PostService) GetAllPosts() ([]dto.PostDto, error) {
 
 func (s *PostService) GetAllPostsByUserID(userId int64) ([]dto.PostDto, error) {
 	list, err := s.repo.GetPostByUserID(userId)
+	if err != nil {
+		return nil, nil
+	}
+
+	var listDto []dto.PostDto
+
+	for _, p := range list {
+		dto := dto.GetPostDto(p, dto.UserDto{}, dto.PostLikeDto{}, nil) // FIX
+		listDto = append(listDto, dto)
+	}
+
+	return listDto, nil
+}
+
+func (s *PostService) GetAllPostsByCategory(catId int64) ([]dto.PostDto, error) {
+	list, err := s.repo.GetPostByCategory(catId)
+	if err != nil {
+		return nil, nil
+	}
+
+	var listDto []dto.PostDto
+
+	for _, p := range list {
+		dto := dto.GetPostDto(p, dto.UserDto{}, dto.PostLikeDto{}, nil) // FIX
+		listDto = append(listDto, dto)
+	}
+
+	return listDto, nil
+}
+
+func (s *PostService) GetAllPostsByLike(t string) ([]dto.PostDto, error) {
+	var list []models.Post
+	var err error
+	if t == "like" {
+		list, err = s.repo.GetPostsByMostLikes()
+	} else {
+		list, err = s.repo.GetPostsByLeastLikes()
+	}
+
 	if err != nil {
 		return nil, nil
 	}
