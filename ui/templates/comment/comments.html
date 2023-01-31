@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CreatePost | Forum</title>
-    <link rel="stylesheet" href="./post.css" type="text/css">
+    <link rel="stylesheet" href="../../static/style/comments.css" type="text/css">
 </head>
 <body>
 
@@ -23,8 +23,8 @@
                
         <h1 class="logo_text">Text: {{ .Text }}</h1>
         <h1 class="logo_text">Date: {{ .Date}}</h1>
-        <h1 class="logo_text">Like: <button>{{ .Like }}</button></h1>
-        <h1 class="logo_text">Dislike: <button>{{ .Dislike}}</button></h1>
+        <h1 class="logo_text">Like: <button>{{ .Like }}</button> Dislike: <button>{{ .Dislike}}</button></h1>
+        
         <h1 class="logo_text">Author:  <a href="/user?id={{ .User.ID}}" >  {{ .User.Username}}</a></h1><br>
             </div>
             {{end}}

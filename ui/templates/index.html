@@ -64,7 +64,141 @@
             </div>
         </div>
     </div>
-    <script>
+
+    <style>
+   body{
+    background-color: #333;
+}
+
+.wrapper{
+    display: grid;
+    grid-template-columns: 2fr 10fr;
+    
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: green;
+    
+}
+
+.ulNavbar{
+    display: block;
+    position: fixed;
+    height: 100%;
+    width: 15%;
+    background-color: white;
+}
+
+.ulNavbar li{
+    color: green;
+    padding: 10px;
+    background-color: white;
+
+
+    cursor: pointer;
+    position: relative;
+    padding: 12px 8px 12px 40px;
+    /* background: #eee;
+    font-size: 18px; */
+    transition: 0.2s;
+  
+    /* make the list items unselectable */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.ulHeader li {
+    float: left;
+    border-right: 1px solid #bbb;
+}
+
+
+.ulNavbar li:nth-child(odd) {
+    background: #f9f9f9;
+  }
+  
+  /* Darker background-color on hover */
+  .ulNavbar li:hover {
+    background: #ddd;
+  }
+  
+  /* When clicked on, add a background color and strike out text */
+  .ulNavbar li.checked {
+    background: #888;
+    color: #fff;
+   
+  }
+  
+  /* Add a "checked" mark when clicked on */
+  .ulNavbar li.checked::before {
+    content: '';
+    position: absolute;
+    border-color: #fff;
+    border-style: solid;
+    border-width: 0 2px 2px 0;
+    top: 10px;
+    left: 16px;
+    transform: rotate(45deg);
+    height: 15px;
+    width: 7px;
+  }
+
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 19px;
+    text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+    background-color: rgb(7, 104, 7);
+}
+
+.active {
+    background-color: #111;
+}
+
+.container{
+    color: white;
+}
+
+.grid-container{
+    /* background-color: green; */
+    color: white;
+    text-decoration: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-row-gap: 1em;
+    margin: 10px;
+}
+
+.card{
+    width: 100%;
+  max-width: 600px;
+  text-align: center;
+  border: 1px solid white;
+  border-radius: 20px;
+  padding: 20px;
+  background-color: green;
+}
+
+
+</style>
+    <!-- <script>
 
         var list = document.querySelector('ulNavbar');
         list.addEventListener('click', function (ev) {
@@ -72,7 +206,7 @@
                 ev.target.classList.toggle('checked');
             }
         }, false);
-    </script>
+    </script> -->
 </body>
 
 </html>
