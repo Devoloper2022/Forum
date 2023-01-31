@@ -12,11 +12,11 @@ type PostDto struct {
 	User      UserDto           `json:"userId"`
 	Like      int64             `json:"like"`
 	Dislike   int64             `json:"dislike"`
-	Likes     PostLikeDto       `json:"likes"`
+	Likes     models.PostLike   `json:"likes"`
 	Categorys []models.Category `json:"categorys"`
 }
 
-func GetPostDto(post models.Post, user UserDto, listLikes PostLikeDto, listCat []models.Category) PostDto {
+func GetPostDto(post models.Post, user UserDto, likes models.PostLike, listCat []models.Category) PostDto {
 	return PostDto{
 		ID:        post.ID,
 		Title:     post.Title,
@@ -24,7 +24,7 @@ func GetPostDto(post models.Post, user UserDto, listLikes PostLikeDto, listCat [
 		Date:      post.Date,
 		Like:      post.Like,
 		Dislike:   post.Dislike,
-		Likes:     listLikes,
+		Likes:     likes,
 		Categorys: listCat,
 	}
 }

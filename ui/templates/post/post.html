@@ -24,7 +24,22 @@
         </div> -->
         <h1 class="logo_title">{{ .Title }}</h1>
         <h2 class="logo_text">{{ .Text }} </h2>
-        <h3 class="logo_like">Like: <button>{{ .Like }}</button> <button>{{ .Dislike }}</button></h3>
+        <h3 class="logo_like">Like:{{ .Like }} </h3>
+            <form method="POST" action="/post/like">
+                <input type="hidden" name ="postId"value="{{.ID}}">
+                <input type="hidden" name ="id"value="{{.Likes.ID}}">
+                <button type="submit" class="button-23"> Like</button>
+            </form>
+
+
+            <h3 class="logo_like">Dislike:{{ .Dislike }} </h3>
+            <form method="POST" action="/post/dislike">
+                <input type="hidden" name ="postId"value="{{.ID}}">
+                <input type="hidden" name ="id"value="{{.Likes.ID}}">
+                <button type="submit" class="button-23"> Dislike</button>
+               
+            </form>
+        
         <h3 class="logo_date">Creation Date: {{ .Date}}</h3>
         <h1 class="logo_username">Author:  <a href="/user?id={{ .User.ID}}" >  {{ .User.Username}}</a></h1>
         

@@ -73,7 +73,8 @@ func (h *Handler) Routes() *http.ServeMux {
 	mux.HandleFunc(urlPostCreate, m.chain(h.CreatePost)) // for auth
 	// mux.HandleFunc(urlPostDelete, m.chain(h.DeletePost)) // for owner
 	// mux.HandleFunc(urlPostUpdate, m.chain(h.UpdatePost)) // for owner
-	mux.HandleFunc(urlPostLike, m.chain(h.LikePost)) // for owner
+	mux.HandleFunc(urlPostLike, m.chain(h.LikePost))       // for owner
+	mux.HandleFunc(urlPostDislike, m.chain(h.DislikePost)) // for owner
 
 	mux.HandleFunc(urlFilterCategory, m.chain(h.ListPosts))      // for all
 	mux.HandleFunc(urlFilterDislike, m.chain(h.ListPostsByLike)) // for all
@@ -85,7 +86,8 @@ func (h *Handler) Routes() *http.ServeMux {
 	mux.HandleFunc(urlCommentCreate, m.chain(h.CreateComment)) // for auth
 	// mux.HandleFunc(urlCommentDelete, m.chain(h.DeletePost))    // for owner
 	// mux.HandleFunc(urlCommentUpdate, m.chain(h.UpdatePost))    // for owner
-	mux.HandleFunc(urlCommentLike, m.chain(h.LikeComment)) // for owner
+	mux.HandleFunc(urlCommentLike, m.chain(h.LikeComment))       // for owner
+	mux.HandleFunc(urlCommentDislike, m.chain(h.DislikeComment)) // for owner
 
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	mux.Handle("/static", http.NotFoundHandler())

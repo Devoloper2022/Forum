@@ -24,7 +24,23 @@
         <h1 class="logo_text">Text: {{ .Text }}</h1>
         <h1 class="logo_text">Date: {{ .Date}}</h1>
         <h1 class="logo_text">Like: <button>{{ .Like }}</button></h1>
+        <form method="POST" action="/comment/like">
+            <input type="hidden" name ="postId"value="{{.PostID}}">
+            <input type="hidden" name ="commentId"value="{{.ID}}">
+            <input type="hidden" name ="id"value="{{.Likes.ID}}">
+            <button type="submit" class="button-23"> Like</button>
+        </form>
+
+
+
         <h1 class="logo_text">Dislike: <button>{{ .Dislike}}</button></h1>
+
+        <form method="POST" action="/comment/dislike">
+            <input type="hidden" name ="postId"value="{{.PostID}}">
+            <input type="hidden" name ="commentId"value="{{.ID}}">
+            <input type="hidden" name ="id"value="{{.Likes.ID}}">
+            <button type="submit" class="button-23"> Dislike</button>
+        </form>
         <h1 class="logo_text">Author:  <a href="/user?id={{ .User.ID}}" >  {{ .User.Username}}</a></h1><br>
             </div>
             {{end}}

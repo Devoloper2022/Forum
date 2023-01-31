@@ -24,13 +24,15 @@ type PostService struct {
 	repo       repository.Post
 	categories repository.Category
 	user       repository.User
+	like       repository.LikePost
 }
 
-func NewPostService(repo repository.Post, categories repository.Category, user repository.User) *PostService {
+func NewPostService(repo repository.Post, categories repository.Category, user repository.User, like repository.LikePost) *PostService {
 	return &PostService{
 		repo:       repo,
 		categories: categories,
 		user:       user,
+		like:       like,
 	}
 }
 
@@ -104,6 +106,8 @@ func (s *PostService) GetPost(postId int64) (dto.PostDto, error) {
 		Text:      post.Text,
 		Date:      post.Date,
 		User:      dto.GetUserDto(user),
+		Like:      post.Like,
+		Dislike:   post.Dislike,
 		Categorys: cat,
 	}, nil
 } // fix
@@ -117,7 +121,7 @@ func (s *PostService) GetAllPosts() ([]dto.PostDto, error) {
 	var listDto []dto.PostDto
 
 	for _, p := range list {
-		dto := dto.GetPostDto(p, dto.UserDto{}, dto.PostLikeDto{}, nil) // FIX
+		dto := dto.GetPostDto(p, dto.UserDto{}, models.PostLike{}, nil) // FIX
 		listDto = append(listDto, dto)
 	}
 
@@ -133,7 +137,7 @@ func (s *PostService) GetAllPostsByUserID(userId int64) ([]dto.PostDto, error) {
 	var listDto []dto.PostDto
 
 	for _, p := range list {
-		dto := dto.GetPostDto(p, dto.UserDto{}, dto.PostLikeDto{}, nil) // FIX
+		dto := dto.GetPostDto(p, dto.UserDto{}, models.PostLike{}, nil) // FIX
 		listDto = append(listDto, dto)
 	}
 
@@ -149,7 +153,7 @@ func (s *PostService) GetAllPostsByCategory(catId int64) ([]dto.PostDto, error) 
 	var listDto []dto.PostDto
 
 	for _, p := range list {
-		dto := dto.GetPostDto(p, dto.UserDto{}, dto.PostLikeDto{}, nil) // FIX
+		dto := dto.GetPostDto(p, dto.UserDto{}, models.PostLike{}, nil) // FIX
 		listDto = append(listDto, dto)
 	}
 
@@ -172,7 +176,7 @@ func (s *PostService) GetAllPostsByLike(t string) ([]dto.PostDto, error) {
 	var listDto []dto.PostDto
 
 	for _, p := range list {
-		dto := dto.GetPostDto(p, dto.UserDto{}, dto.PostLikeDto{}, nil) // FIX
+		dto := dto.GetPostDto(p, dto.UserDto{}, models.PostLike{}, nil) // FIX
 		listDto = append(listDto, dto)
 	}
 

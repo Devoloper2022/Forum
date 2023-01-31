@@ -68,14 +68,6 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value(key).(models.User)
-	if user == (models.User{}) {
-		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
-	}
-	w.Write([]byte("UpdatePost из page"))
-}
-
 func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != urlPost {
 		h.notFound(w)
@@ -207,14 +199,124 @@ func (h *Handler) ListPostsByLike(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("DeletePost из page"))
-}
-
 func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(key).(models.User)
 	if user == (models.User{}) {
 		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
 	}
-	w.Write([]byte("LikePost из page"))
+
+	if r.URL.Path != urlPostLike {
+		h.notFound(w)
+		return
+	}
+
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			log.Println("error parse form :", err)
+			return
+		}
+		likeID := r.PostFormValue("id")
+
+		id, err := strconv.Atoi(likeID)
+
+		if err != nil || id < 0 {
+			h.notFound(w)
+			return
+		}
+
+		postId := r.PostFormValue("postId")
+
+		pid, err := strconv.Atoi(postId)
+
+		if err != nil || pid < 1 {
+			h.notFound(w)
+			return
+		}
+
+		err = h.services.LikePost.LikePost(models.PostLike{
+			ID:      int64(id),
+			PostID:  int64(pid),
+			UserID:  user.ID,
+			Like:    true,
+			DisLike: false,
+		})
+
+		if err != nil {
+			h.errorLog.Println(err.Error())
+			h.serverError(w, err)
+			return
+		}
+		http.Redirect(w, r, fmt.Sprintf("/post?id=%d", pid), http.StatusSeeOther)
+	} else {
+		log.Println("Create Post: Method not allowed")
+		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
+	}
 }
+
+func (h *Handler) DislikePost(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(key).(models.User)
+	if user == (models.User{}) {
+		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+	}
+
+	if r.URL.Path != urlPostDislike {
+		h.notFound(w)
+		return
+	}
+
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			log.Println("error parse form :", err)
+			return
+		}
+		likeID := r.PostFormValue("id")
+
+		id, err := strconv.Atoi(likeID)
+
+		if err != nil || id < 0 {
+			h.notFound(w)
+			return
+		}
+
+		postId := r.PostFormValue("postId")
+
+		pid, err := strconv.Atoi(postId)
+
+		if err != nil || pid < 1 {
+			h.notFound(w)
+			return
+		}
+
+		err = h.services.LikePost.DislikePost(models.PostLike{
+			ID:      int64(id),
+			PostID:  int64(pid),
+			UserID:  user.ID,
+			DisLike: true,
+			Like:    false,
+		})
+
+		if err != nil {
+			h.errorLog.Println(err.Error())
+			h.serverError(w, err)
+			return
+		}
+		http.Redirect(w, r, fmt.Sprintf("/post?id=%d", pid), http.StatusSeeOther)
+	} else {
+		log.Println("Create Post: Method not allowed")
+		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
+	}
+}
+
+// func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
+// 	user := r.Context().Value(key).(models.User)
+// 	if user == (models.User{}) {
+// 		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+// 	}
+// 	w.Write([]byte("UpdatePost из page"))
+// }
+
+// func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
+// 	w.Write([]byte("DeletePost из page"))
+// }

@@ -117,5 +117,126 @@ func (h *Handler) LikeComment(w http.ResponseWriter, r *http.Request) {
 	if user == (models.User{}) {
 		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
 	}
-	w.Write([]byte("UpdatePost из page"))
+
+	if r.URL.Path != urlCommentLike {
+		h.notFound(w)
+		return
+	}
+
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			log.Println("error parse form :", err)
+			return
+		}
+		likeID := r.PostFormValue("id")
+
+		id, err := strconv.Atoi(likeID)
+
+		if err != nil || id < 0 {
+			h.notFound(w)
+			return
+		}
+
+		commentId := r.PostFormValue("commentId")
+
+		cid, err := strconv.Atoi(commentId)
+
+		if err != nil || cid < 1 {
+			h.notFound(w)
+			return
+		}
+
+		postID := r.PostFormValue("postId")
+
+		pid, err := strconv.Atoi(postID)
+
+		if err != nil || id < 0 {
+			h.notFound(w)
+			return
+		}
+
+		err = h.services.LikeComment(models.CommentLike{
+			ID:        int64(id),
+			CommentID: int64(cid),
+			UserID:    user.ID,
+			Like:      true,
+			DisLike:   false,
+		})
+
+		if err != nil {
+			h.errorLog.Println(err.Error())
+			h.serverError(w, err)
+			return
+		}
+
+		http.Redirect(w, r, fmt.Sprintf("/comments/all?id=%d", pid), http.StatusSeeOther)
+	} else {
+		log.Println("Create Post: Method not allowed")
+		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
+	}
+}
+
+func (h *Handler) DislikeComment(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(key).(models.User)
+	if user == (models.User{}) {
+		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+	}
+
+	if r.URL.Path != urlCommentDislike {
+		h.notFound(w)
+		return
+	}
+
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			log.Println("error parse form :", err)
+			return
+		}
+		likeID := r.PostFormValue("id")
+
+		id, err := strconv.Atoi(likeID)
+
+		if err != nil || id < 0 {
+			h.notFound(w)
+			return
+		}
+
+		commentId := r.PostFormValue("postId")
+
+		cid, err := strconv.Atoi(commentId)
+
+		if err != nil || cid < 1 {
+			h.notFound(w)
+			return
+		}
+
+		postID := r.PostFormValue("postId")
+
+		pid, err := strconv.Atoi(postID)
+
+		if err != nil || id < 0 {
+			h.notFound(w)
+			return
+		}
+
+		err = h.services.DislikeComment(models.CommentLike{
+			ID:        int64(id),
+			CommentID: int64(cid),
+			UserID:    user.ID,
+			Like:      false,
+			DisLike:   true,
+		})
+
+		if err != nil {
+			h.errorLog.Println(err.Error())
+			h.serverError(w, err)
+			return
+		}
+		http.Redirect(w, r, fmt.Sprintf("/comments/all?id=%d", pid), http.StatusSeeOther)
+	} else {
+		log.Println("Create Post: Method not allowed")
+		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
+	}
 }
