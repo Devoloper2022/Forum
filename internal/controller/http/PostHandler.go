@@ -114,7 +114,97 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) ListPosts(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("ListPosts из page"))
+	if r.URL.Path != urlFilterCategory {
+		h.notFound(w)
+		return
+	}
+
+	files := []string{
+		"./ui/templates/index.html",
+	}
+	// as
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		h.serverError(w, err)
+		return
+	}
+
+	categories, err := h.services.GetAllCategories()
+	if err != nil {
+		h.errorLog.Println(err.Error())
+		h.serverError(w, err)
+		return
+	}
+
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+
+	if err != nil || id < 1 {
+		h.notFound(w)
+		return
+	}
+	//
+
+	posts, err := h.services.GetAllPostsByCategory(int64(id))
+	if err != nil {
+		h.errorLog.Println(err.Error())
+		h.serverError(w, err)
+		return
+	}
+
+	err = ts.Execute(w, dto.Index{
+		List: categories,
+		Post: posts,
+	})
+
+	if err != nil {
+		h.serverError(w, err)
+	}
+}
+
+func (h *Handler) ListPostsByLike(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != urlFilterDislike || r.URL.Path != urlFilterLike {
+		h.notFound(w)
+		return
+	}
+
+	files := []string{
+		"./ui/templates/index.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		h.serverError(w, err)
+		return
+	}
+
+	categories, err := h.services.GetAllCategories()
+	if err != nil {
+		h.errorLog.Println(err.Error())
+		h.serverError(w, err)
+		return
+	}
+
+	var posts []dto.PostDto
+	if r.URL.Path == urlFilterDislike {
+		posts, err = h.services.Post.GetAllPostsByLike("like")
+	} else {
+		posts, err = h.services.Post.GetAllPostsByLike("dislike")
+	}
+
+	if err != nil {
+		h.errorLog.Println(err.Error())
+		h.serverError(w, err)
+		return
+	}
+
+	err = ts.Execute(w, dto.Index{
+		List: categories,
+		Post: posts,
+	})
+
+	if err != nil {
+		h.serverError(w, err)
+	}
 }
 
 func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {

@@ -24,7 +24,7 @@
         </div> -->
         <h1 class="logo_title">{{ .Title }}</h1>
         <h2 class="logo_text">{{ .Text }} </h2>
-        <h3 class="logo_like">Like: {{ .Like }} {{ .Dislike }}</h3>
+        <h3 class="logo_like">Like: <button>{{ .Like }}</button> <button>{{ .Dislike }}</button></h3>
         <h3 class="logo_date">Creation Date: {{ .Date}}</h3>
         <h1 class="logo_username">Author:  <a href="/user?id={{ .User.ID}}" >  {{ .User.Username}}</a></h1>
         

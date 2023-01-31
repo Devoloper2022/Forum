@@ -23,8 +23,8 @@
                
         <h1 class="logo_text">Text: {{ .Text }}</h1>
         <h1 class="logo_text">Date: {{ .Date}}</h1>
-        <h1 class="logo_text">Like: {{ .Like }}</h1>
-        <h1 class="logo_text">Dislike: {{ .Dislike}}</h1>
+        <h1 class="logo_text">Like: <button>{{ .Like }}</button></h1>
+        <h1 class="logo_text">Dislike: <button>{{ .Dislike}}</button></h1>
         <h1 class="logo_text">Author:  <a href="/user?id={{ .User.ID}}" >  {{ .User.Username}}</a></h1><br>
             </div>
             {{end}}
