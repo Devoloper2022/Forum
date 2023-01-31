@@ -24,7 +24,7 @@
         <div class="Navbar">
             <ul class="ulNavbar">
                 <li class="checked">{{range . }}</li>
-                <li>Rust</li>
+                <li name="LI">Rust</li>
                 <li>JavaScript</li>
                 <li>Flutter</li>
                 <li>Unity</li>
@@ -54,7 +54,7 @@
     </div>
     <script>
 
-        var list = document.querySelector('ul');
+        var list = document.querySelector('ulNavbar');
         list.addEventListener('click', function (ev) {
             if (ev.target.tagName === 'LI') {
                 ev.target.classList.toggle('checked');
