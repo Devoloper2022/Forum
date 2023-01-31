@@ -7,6 +7,8 @@ import (
 
 type Autorization interface {
 	SaveToken(userID int64, sessionToken string, time time.Time) error
+	GetToken(id int64) (string, time.Time, error)
+	UpdateToken(tokenName, newToken string, expireTime time.Time) error
 	DeleteToken(token string) error
 	DeleteTokenWhenExpireTime() error
 }
@@ -27,8 +29,45 @@ func (r *Database) SaveToken(userID int64, sessionToken string, time time.Time) 
 	return nil
 }
 
+func (r *Database) UpdateToken(tokenName, newToken string, expireTime time.Time) error {
+	query := ("UPDATE sessions SET Token=?, Expiry=? WHERE Token=?")
+	st, err := r.db.Prepare(query)
+	defer st.Close()
+
+	if err != nil {
+		return fmt.Errorf("repository : UPDATE Comment Like : %w", err)
+	}
+
+	_, err = st.Exec(newToken, expireTime, tokenName)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Database) GetToken(id int64) (string, time.Time, error) {
+	query := ("SELECT Token,Expiry FROM sessions WHERE UserID=?")
+	st, err := r.db.Prepare(query)
+	defer st.Close()
+
+	if err != nil {
+		return "", time.Time{}, err
+	}
+
+	row := st.QueryRow(id)
+
+	var token string
+	var expireTime time.Time
+	if err = row.Scan(&token, &expireTime); err != nil {
+		return "", time.Time{}, err
+	}
+
+	return token, expireTime, nil
+}
+
 func (r *Database) DeleteToken(token string) error {
-	query := ("DELETE FROM session WHERE Token=?")
+	query := ("DELETE FROM sessions WHERE Token=?")
 	st, err := r.db.Prepare(query)
 	defer st.Close()
 
@@ -45,7 +84,7 @@ func (r *Database) DeleteToken(token string) error {
 }
 
 func (r *Database) DeleteTokenWhenExpireTime() error {
-	query := ("DELETE FROM session WHERE ExpireTime <= ?")
+	query := ("DELETE FROM sessions WHERE Expiry <= ?")
 	st, err := r.db.Prepare(query)
 	defer st.Close()
 

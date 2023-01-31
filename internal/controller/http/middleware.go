@@ -47,6 +47,7 @@ func (h *Handler) userIdentity(next http.HandlerFunc) http.HandlerFunc {
 			h.serverError(w, err)
 			return
 		}
+
 		user, err = h.services.Autorization.ParseToken(token.Value)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {

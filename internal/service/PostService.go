@@ -15,8 +15,6 @@ type Post interface {
 	GetAllPostsByUserID(userId int64) ([]dto.PostDto, error)
 	GetPost(postId int64) (dto.PostDto, error)
 	UpdatePost(post dto.PostDto) error
-
-	// GetPostByFilter(query map[string][]string) ([]models.PostInfo, error)
 }
 
 type PostService struct {
@@ -116,7 +114,7 @@ func (s *PostService) GetAllPosts() ([]dto.PostDto, error) {
 	var listDto []dto.PostDto
 
 	for _, p := range list {
-		dto := dto.GetPostDto(p, dto.UserDto{}, nil, nil) // FIX
+		dto := dto.GetPostDto(p, dto.UserDto{}, dto.PostLikeDto{}, nil) // FIX
 		listDto = append(listDto, dto)
 	}
 
@@ -132,7 +130,7 @@ func (s *PostService) GetAllPostsByUserID(userId int64) ([]dto.PostDto, error) {
 	var listDto []dto.PostDto
 
 	for _, p := range list {
-		dto := dto.GetPostDto(p, dto.UserDto{}, nil, nil) // FIX
+		dto := dto.GetPostDto(p, dto.UserDto{}, dto.PostLikeDto{}, nil) // FIX
 		listDto = append(listDto, dto)
 	}
 
