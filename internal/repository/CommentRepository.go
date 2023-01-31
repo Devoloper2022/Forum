@@ -48,7 +48,7 @@ func (r *Database) GetComment(commentID int64) (models.Comment, error) {
 }
 
 func (r *Database) UpdateComment(comment models.Comment) error {
-	query := "UPDATE comments SET  Text =?,Like,Dislike WHERE  ID = ?"
+	query := "UPDATE comments SET  Text =?,Like=?,Dislike=? WHERE  ID = ?"
 	st, err := r.db.Prepare(query)
 	defer st.Close()
 

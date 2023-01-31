@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	dto "forum/internal/DTO"
+	"forum/internal/models"
 	"html/template"
 	"log"
 	"net/http"
@@ -10,6 +11,10 @@ import (
 )
 
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(key).(models.User)
+	if user == (models.User{}) {
+		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+	}
 	if r.URL.Path != urlPostCreate {
 		h.notFound(w)
 		return
@@ -49,9 +54,8 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 			h.clientError(w, 400)
 			return
 		}
-		var userID int64 = 1 /// DEL
 
-		pid, err := h.services.CreatePost(dto.PostDto{Title: title, Text: text, User: dto.UserDto{ID: userID}}, categories)
+		pid, err := h.services.CreatePost(dto.PostDto{Title: title, Text: text, User: dto.UserDto{ID: user.ID}}, categories)
 		if err != nil {
 			h.serverError(w, err)
 			return
@@ -65,6 +69,10 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(key).(models.User)
+	if user == (models.User{}) {
+		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+	}
 	w.Write([]byte("UpdatePost из page"))
 }
 
@@ -114,5 +122,9 @@ func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(key).(models.User)
+	if user == (models.User{}) {
+		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+	}
 	w.Write([]byte("LikePost из page"))
 }

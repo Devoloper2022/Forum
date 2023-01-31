@@ -26,4 +26,9 @@ var (
 	// password error
 	ErrPasswordInvalid = errors.New("Invalid password")
 	ErrPasswdNotMatch  = errors.New("Password doesn't match")
+
+	//
+	ErrDislike     = errors.New("Dislike is true")
+	ErrLike        = errors.New("Like is true")
+	ErrLikeDislike = errors.New("Like and Dislike is equal")
 )
