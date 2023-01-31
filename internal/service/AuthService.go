@@ -49,6 +49,7 @@ func (s *AuthService) GenerateToken(login dto.Credentials) (dto.Cook, error) {
 			return dto.Cook{}, dto.ErrUserNotFound
 		}
 	}
+	// asd
 
 	if err := checkHash(user.Password, login.Password); err != nil {
 		return dto.Cook{}, dto.ErrPasswdNotMatch
