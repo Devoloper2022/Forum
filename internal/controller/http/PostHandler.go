@@ -159,10 +159,16 @@ func (h *Handler) ListPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) ListPostsByLike(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != urlFilterDislike || r.URL.Path != urlFilterLike {
+	if r.URL.Path == urlFilterDislike || r.URL.Path == urlFilterLike {
+	} else {
 		h.notFound(w)
 		return
 	}
+
+	// if r.Method != "GET" {
+	// 	h.clientError(w, 400)
+	// 	return
+	// }
 
 	files := []string{
 		"./ui/templates/index.html",
@@ -183,9 +189,9 @@ func (h *Handler) ListPostsByLike(w http.ResponseWriter, r *http.Request) {
 
 	var posts []dto.PostDto
 	if r.URL.Path == urlFilterDislike {
-		posts, err = h.services.Post.GetAllPostsByLike("like")
-	} else {
 		posts, err = h.services.Post.GetAllPostsByLike("dislike")
+	} else {
+		posts, err = h.services.Post.GetAllPostsByLike("like")
 	}
 
 	if err != nil {
@@ -201,6 +207,7 @@ func (h *Handler) ListPostsByLike(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		h.serverError(w, err)
+		return
 	}
 }
 

@@ -25,7 +25,7 @@ const (
 
 	urlFilterCategory = "/filter/category/"
 	urlFilterLike     = "/filter/like"
-	urlFilterDislike  = "/filter/dislike/"
+	urlFilterDislike  = "/filter/dislike"
 
 	// user
 	urlUser = "/user/"
