@@ -133,8 +133,6 @@ func (s *LikePostService) LikePost(data models.PostLike) error {
 
 		return nil
 	}
-
-	return nil
 }
 
 func (s *LikePostService) DislikePost(data models.PostLike) error {
@@ -240,6 +238,4 @@ func (s *LikePostService) DislikePost(data models.PostLike) error {
 		}
 		return nil
 	}
-
-	return nil
 }

@@ -133,7 +133,7 @@ func (r *Database) GetPostByUserID(userID int64) ([]models.Post, error) {
 }
 
 func (r *Database) GetPostsByMostLikes() ([]models.Post, error) {
-	query := ("SELECT *  from posts ORDER BY Like DESC,Dislike ASC")
+	query := ("SELECT *  from posts WHERE Like > 0 ORDER BY Like DESC,Dislike ASC")
 	st, err := r.db.Prepare(query)
 	if err != nil {
 		return nil, fmt.Errorf("\nrepository : Get All Posts  checker 1\n: %w", err)
@@ -164,7 +164,7 @@ func (r *Database) GetPostsByMostLikes() ([]models.Post, error) {
 }
 
 func (r *Database) GetPostsByLeastLikes() ([]models.Post, error) {
-	query := ("SELECT *  from posts ORDER BY Dislike DESC,Like ASC")
+	query := ("SELECT *  from posts WHERE Dislike > 0 ORDER BY Dislike DESC,Like ASC")
 	st, err := r.db.Prepare(query)
 	if err != nil {
 		return nil, fmt.Errorf("\nrepository : Get All Posts  checker 1\n: %w", err)

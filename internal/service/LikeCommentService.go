@@ -133,8 +133,6 @@ func (s *LikeService) LikeComment(data models.CommentLike) error {
 
 		return nil
 	}
-
-	return nil
 }
 
 func (s *LikeService) DislikeComment(data models.CommentLike) error {
@@ -240,6 +238,4 @@ func (s *LikeService) DislikeComment(data models.CommentLike) error {
 		}
 		return nil
 	}
-
-	return nil
 }

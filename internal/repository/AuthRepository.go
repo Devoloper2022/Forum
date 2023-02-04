@@ -11,6 +11,9 @@ type Autorization interface {
 	UpdateToken(tokenName, newToken string, expireTime time.Time) error
 	DeleteToken(token string) error
 	DeleteTokenWhenExpireTime() error
+
+	GetTokens(id int64) error
+	DeleteTokenByUserID(userID int64) error
 }
 
 func (r *Database) SaveToken(userID int64, sessionToken string, time time.Time) error {
@@ -66,6 +69,23 @@ func (r *Database) GetToken(id int64) (string, time.Time, error) {
 	return token, expireTime, nil
 }
 
+func (r *Database) GetTokens(id int64) error {
+	query := ("SELECT Token,Expiry FROM sessions WHERE UserID=?")
+	st, err := r.db.Prepare(query)
+	defer st.Close()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = st.Query(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *Database) DeleteToken(token string) error {
 	query := ("DELETE FROM sessions WHERE Token=?")
 	st, err := r.db.Prepare(query)
@@ -76,6 +96,23 @@ func (r *Database) DeleteToken(token string) error {
 	}
 
 	_, err = st.Exec(token)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *Database) DeleteTokenByUserID(userID int64) error {
+	query := ("DELETE FROM sessions WHERE UserID=?")
+	st, err := r.db.Prepare(query)
+	defer st.Close()
+
+	if err != nil {
+		return fmt.Errorf("repository : Delete Token  checker 1: %w", err)
+	}
+
+	_, err = st.Exec(userID)
 
 	if err != nil {
 		return err

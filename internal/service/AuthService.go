@@ -49,18 +49,17 @@ func (s *AuthService) GenerateToken(login dto.Credentials) (dto.Cook, error) {
 			return dto.Cook{}, dto.ErrUserNotFound
 		}
 	}
-	// asd
 
 	if err := checkHash(user.Password, login.Password); err != nil {
 		return dto.Cook{}, dto.ErrPasswdNotMatch
 	}
-	token, expireTime, err := s.auth.GetToken(user.ID)
-	if err == nil && expireTime.Equal(time.Now()) {
-		return dto.Cook{
-			Token:  token,
-			Expiry: expireTime,
-		}, nil
+
+	err = s.auth.GetTokens(user.ID)
+
+	if err == nil {
+		s.auth.DeleteTokenByUserID(user.ID)
 	}
+
 	cook := dto.Cook{
 		Token:  uuid.NewString(),
 		Expiry: time.Now().Add(15 * time.Minute),
