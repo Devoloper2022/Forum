@@ -5,7 +5,6 @@ import (
 	dto "forum/internal/DTO"
 	"forum/internal/models"
 	"html/template"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -18,20 +17,20 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.URL.Path != urlPostCreate {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 
 	if r.Method == "GET" {
 		ts, err := template.ParseFiles("./ui/templates/post/createPost.html")
 		if err != nil {
-			log.Printf("Create Post: Execute:%v", err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 
 		categories, err := h.services.GetAllCategories()
 		if err != nil {
-			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			h.errorHandler(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -44,7 +43,7 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 		err := r.ParseForm()
 		if err != nil {
-			log.Println("error parse form :", err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 		title := r.PostFormValue("title")
@@ -56,63 +55,62 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		categories := r.Form["categories"]
 
 		if title1 == "" || text1 == "" || categories == nil {
-			h.clientError(w, 400)
+			h.errorHandler(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 			return
 		}
 
 		pid, err := h.services.CreatePost(dto.PostDto{Title: title, Text: text, User: dto.UserDto{ID: user.ID}}, categories)
 		if err != nil {
-			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			h.errorHandler(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		http.Redirect(w, r, fmt.Sprintf("/post?id=%d", pid), http.StatusSeeOther)
 	} else {
-		log.Println("Create Post: Method not allowed")
 		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
+		h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
 	}
 }
 
 func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != urlPost {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 	if r.Method != "GET" {
-		h.clientError(w, 400)
+		h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
 		return
 	}
 
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 
 	if err != nil || id < 1 {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 
 	ts, err := template.ParseFiles("./ui/templates/post/post.html")
 	if err != nil {
-		log.Printf("Get Post: Execute:%v", err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 
 	post, err := h.services.GetPost(int64(id))
 	if err != nil {
-		h.errorLog.Println(err.Error())
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	err = ts.Execute(w, post)
 	if err != nil {
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 }
 
 func (h *Handler) ListPosts(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != urlFilterCategory {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 
@@ -122,29 +120,27 @@ func (h *Handler) ListPosts(w http.ResponseWriter, r *http.Request) {
 	// as
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 
 	categories, err := h.services.GetAllCategories()
 	if err != nil {
-		h.errorLog.Println(err.Error())
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 
 	if err != nil || id < 1 {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 	//
 
 	posts, err := h.services.GetAllPostsByCategory(int64(id))
 	if err != nil {
-		h.errorLog.Println(err.Error())
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -154,21 +150,28 @@ func (h *Handler) ListPosts(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
 	}
 }
 
 func (h *Handler) ListPostsByLike(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path == urlFilterDislike || r.URL.Path == urlFilterLike {
-	} else {
-		h.notFound(w)
+	user := r.Context().Value(key).(models.User)
+	if user == (models.User{}) {
+		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
 		return
 	}
 
-	// if r.Method != "GET" {
-	// 	h.clientError(w, 400)
-	// 	return
-	// }
+	if r.URL.Path == urlFilterDislike || r.URL.Path == urlFilterLike {
+	} else {
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+		return
+	}
+
+	if r.Method != "GET" {
+		h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
+		return
+	}
 
 	files := []string{
 		"./ui/templates/index.html",
@@ -176,14 +179,13 @@ func (h *Handler) ListPostsByLike(w http.ResponseWriter, r *http.Request) {
 
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 
 	categories, err := h.services.GetAllCategories()
 	if err != nil {
-		h.errorLog.Println(err.Error())
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -195,8 +197,7 @@ func (h *Handler) ListPostsByLike(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		h.errorLog.Println(err.Error())
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -206,7 +207,7 @@ func (h *Handler) ListPostsByLike(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 }
@@ -219,14 +220,14 @@ func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.URL.Path != urlPostLike {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
-			log.Println("error parse form :", err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 		likeID := r.PostFormValue("id")
@@ -234,7 +235,7 @@ func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(likeID)
 
 		if err != nil || id < 0 {
-			h.notFound(w)
+			h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 			return
 		}
 
@@ -243,7 +244,7 @@ func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 		pid, err := strconv.Atoi(postId)
 
 		if err != nil || pid < 1 {
-			h.notFound(w)
+			h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 			return
 		}
 
@@ -256,13 +257,13 @@ func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 		})
 
 		if err != nil {
-			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			h.errorHandler(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 		http.Redirect(w, r, fmt.Sprintf("/post?id=%d", pid), http.StatusSeeOther)
 	} else {
-		log.Println("Create Post: Method not allowed")
 		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
+		h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
 	}
 }
 
@@ -274,14 +275,14 @@ func (h *Handler) DislikePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.URL.Path != urlPostDislike {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
-			log.Println("error parse form :", err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 		likeID := r.PostFormValue("id")
@@ -289,7 +290,7 @@ func (h *Handler) DislikePost(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(likeID)
 
 		if err != nil || id < 0 {
-			h.notFound(w)
+			h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 			return
 		}
 
@@ -298,7 +299,7 @@ func (h *Handler) DislikePost(w http.ResponseWriter, r *http.Request) {
 		pid, err := strconv.Atoi(postId)
 
 		if err != nil || pid < 1 {
-			h.notFound(w)
+			h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 			return
 		}
 
@@ -311,12 +312,12 @@ func (h *Handler) DislikePost(w http.ResponseWriter, r *http.Request) {
 		})
 
 		if err != nil {
-			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			h.errorHandler(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 		http.Redirect(w, r, fmt.Sprintf("/post?id=%d", pid), http.StatusSeeOther)
 	} else {
-		log.Println("Create Post: Method not allowed")
 		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
+		h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
 	}
 }

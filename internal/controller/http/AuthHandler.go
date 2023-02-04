@@ -4,7 +4,6 @@ import (
 	dto "forum/internal/DTO"
 	"forum/internal/models"
 	"html/template"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -27,7 +26,7 @@ func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 	}
 	categories, err := h.services.GetAllCategories()
 	if err != nil {
-		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		h.errorHandler(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -157,7 +156,7 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 			Password: pass,
 		})
 		if err != nil {
-			h.errorHandler(w, http.StatusBadRequest, "Not valid input ")
+			h.errorHandler(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -171,8 +170,8 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, urlHome, http.StatusSeeOther)
 
 	} else {
-		log.Println("Create Post: Method not allowed")
 		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
+		h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
 	}
 }
 
@@ -219,5 +218,4 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, c)
 		http.Redirect(w, r, urlHome, http.StatusSeeOther)
 	}
-	w.Write([]byte("Logout page"))
 }
