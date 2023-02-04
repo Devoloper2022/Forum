@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"forum/internal/models"
 )
 
@@ -37,7 +36,7 @@ func (r *Database) UpdateCommentLike(modele models.CommentLike) error {
 	defer st.Close()
 
 	if err != nil {
-		return fmt.Errorf("repository : UPDATE Comment Like : %w", err)
+		return err
 	}
 
 	_, err = st.Exec(modele.Like, modele.DisLike, modele.ID)
@@ -55,7 +54,7 @@ func (r *Database) UpdateCommentTable(id int64, like, dislike int64) error {
 	defer st.Close()
 
 	if err != nil {
-		return fmt.Errorf("repository : Update Comment L : %w", err)
+		return err
 	}
 
 	_, err = st.Exec(like, dislike, id)
@@ -92,7 +91,7 @@ func (r *Database) DeleteCommentLike(id int64) error {
 	defer st.Close()
 
 	if err != nil {
-		return fmt.Errorf("repository : Delete Comment Like 1: %w", err)
+		return err
 	}
 
 	_, err = st.Exec(id)

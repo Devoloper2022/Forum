@@ -36,7 +36,7 @@ func (r *Database) GetUser(userId int64) (models.User, error) {
 	query := ("SELECT * FROM users WHERE ID = ?")
 	st, err := r.db.Prepare(query)
 	if err != nil {
-		return models.User{}, fmt.Errorf("repository : Get Post  checker 1: %w", err)
+		return models.User{}, err
 	}
 	defer st.Close()
 
@@ -54,7 +54,7 @@ func (r *Database) GetUserByUsername(username string) (models.User, error) {
 	query := ("SELECT * FROM users WHERE Username = ?")
 	st, err := r.db.Prepare(query)
 	if err != nil {
-		return models.User{}, fmt.Errorf("repository : Get Post  checker 1: %w", err)
+		return models.User{}, err
 	}
 	defer st.Close()
 
@@ -72,7 +72,7 @@ func (r *Database) GetUserByEmail(email string) (models.User, error) {
 	query := ("SELECT * FROM users WHERE Email = ?")
 	st, err := r.db.Prepare(query)
 	if err != nil {
-		return models.User{}, fmt.Errorf("repository : Get Post  checker 1: %w", err)
+		return models.User{}, err
 	}
 	defer st.Close()
 
@@ -93,7 +93,7 @@ func (r *Database) GetUserByToken(token string) (models.User, error) {
 
 	fmt.Println()
 	if err != nil {
-		return models.User{}, fmt.Errorf("repository : Get User By Token  checker 1: %w", err)
+		return models.User{}, err
 	}
 
 	row := st.QueryRow(token)

@@ -50,6 +50,7 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(key).(models.User)
 	if user != (models.User{}) {
 		http.Redirect(w, r, urlHome, http.StatusSeeOther)
+		return
 	}
 	if r.URL.Path != urlSignUP {
 		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
@@ -72,7 +73,7 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 
 		err := r.ParseForm()
 		if err != nil {
-			h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 
@@ -99,7 +100,7 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 			Password: pass,
 		})
 		if err != nil {
-			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			h.errorHandler(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -115,6 +116,7 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(key).(models.User)
 	if user != (models.User{}) {
 		http.Redirect(w, r, urlHome, http.StatusSeeOther)
+		return
 	}
 	if r.URL.Path != urlSignIn {
 		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))

@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"forum/internal/models"
 )
 
@@ -71,7 +70,7 @@ func (r *Database) GetPostLike(postID, userID int64) (models.PostLike, error) {
 	query := ("SELECT * FROM postLike WHERE postID = ? AND userID=?")
 	st, err := r.db.Prepare(query)
 	if err != nil {
-		return models.PostLike{}, fmt.Errorf("repository : Get Post Like 1: %w", err)
+		return models.PostLike{}, err
 	}
 	defer st.Close()
 
@@ -91,7 +90,7 @@ func (r *Database) DeletePostLike(id int64) error {
 	defer st.Close()
 
 	if err != nil {
-		return fmt.Errorf("repository : Delete Post Like 1: %w", err)
+		return err
 	}
 
 	_, err = st.Exec(id)

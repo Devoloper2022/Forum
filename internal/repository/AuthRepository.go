@@ -22,7 +22,7 @@ func (r *Database) SaveToken(userID int64, sessionToken string, time time.Time) 
 	defer st.Close()
 
 	if err != nil {
-		return fmt.Errorf("repository : create post : %w", err)
+		return err
 	}
 
 	_, err = st.Exec(sessionToken, time, userID)
@@ -38,7 +38,7 @@ func (r *Database) UpdateToken(tokenName, newToken string, expireTime time.Time)
 	defer st.Close()
 
 	if err != nil {
-		return fmt.Errorf("repository : UPDATE Comment Like : %w", err)
+		return err
 	}
 
 	_, err = st.Exec(newToken, expireTime, tokenName)
@@ -109,7 +109,7 @@ func (r *Database) DeleteTokenByUserID(userID int64) error {
 	defer st.Close()
 
 	if err != nil {
-		return fmt.Errorf("repository : Delete Token  checker 1: %w", err)
+		return err
 	}
 
 	_, err = st.Exec(userID)
@@ -126,7 +126,7 @@ func (r *Database) DeleteTokenWhenExpireTime() error {
 	defer st.Close()
 
 	if err != nil {
-		return fmt.Errorf("repository : Delete Token  checker 1: %w", err)
+		return err
 	}
 
 	_, err = st.Exec(time.Now())
