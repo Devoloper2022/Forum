@@ -19,14 +19,14 @@ type Post interface {
 
 // main functions
 func (r *Database) CreatePost(post models.Post) (int64, error) {
-	query := ("INSERT INTO posts (Title,Text,Date,Like,Dislike,UserId) VALUES (?,?,?,?,?,?)")
+	query := ("INSERT INTO posts (Title,Text,Like,Dislike,UserId) VALUES (?,?,?,?,?)")
 	st, err := r.db.Prepare(query)
 	if err != nil {
-		return 0, fmt.Errorf("repository : create post : %w", err)
+		return 0, err
 	}
 	defer st.Close()
 
-	res, err := st.Exec(post.Title, post.Text, post.Date, post.Like, post.Dislike, post.UserID)
+	res, err := st.Exec(post.Title, post.Text, post.Like, post.Dislike, post.UserID)
 
 	id, err := res.LastInsertId()
 	if err != nil {
@@ -95,10 +95,12 @@ func (r *Database) GetPost(postId int64) (models.Post, error) {
 
 	row := st.QueryRow(postId)
 	var post models.Post
+	// var date string
 	if err = row.Scan(&post.ID, &post.Title, &post.Text, &post.Date, &post.Like, &post.Dislike, &post.UserID); err != nil {
 		return models.Post{}, err
 	}
-
+	// newDate, _ := time.Parse("d MMM yyyy HH:mm:ss", date)
+	// post.Date = newDate
 	return post, nil
 }
 

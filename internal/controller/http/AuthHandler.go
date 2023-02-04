@@ -32,7 +32,7 @@ func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 
 	posts, err := h.services.GetAllPosts()
 	if err != nil {
-		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		h.errorHandler(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 

@@ -2,6 +2,7 @@ package dto
 
 import (
 	"forum/internal/models"
+	"time"
 )
 
 type PostDto struct {
@@ -21,7 +22,7 @@ func GetPostDto(post models.Post, user UserDto, likes models.PostLike, listCat [
 		ID:        post.ID,
 		Title:     post.Title,
 		Text:      post.Text,
-		Date:      post.Date,
+		Date:      post.Date.Format(time.RFC1123),
 		Like:      post.Like,
 		Dislike:   post.Dislike,
 		Likes:     likes,
@@ -30,12 +31,12 @@ func GetPostDto(post models.Post, user UserDto, likes models.PostLike, listCat [
 }
 
 func (dto *PostDto) GetPostModel() models.Post {
-	// date, _ := time.Parse("d MMM yyyy HH:mm:ss", dto.Date)
+	date, _ := time.Parse("d MMM yyyy HH:mm:ss", dto.Date)
 	return models.Post{
 		ID:      dto.ID,
 		Title:   dto.Title,
 		Text:    dto.Text,
-		Date:    dto.Date,
+		Date:    date,
 		Like:    dto.Like,
 		Dislike: dto.Dislike,
 		UserID:  dto.ID,
