@@ -18,6 +18,7 @@ type Post interface {
 	GetAllPostsByUserID(userId int64) ([]dto.PostDto, error)
 	GetAllPostsByCategory(catId int64) ([]dto.PostDto, error)
 	GetAllPostsByLike(t string) ([]dto.PostDto, error)
+	GetAllPostsByDate() ([]dto.PostDto, error)
 }
 
 type PostService struct {
@@ -71,7 +72,7 @@ func (s *PostService) CreatePost(post dto.PostDto, categories []string) (int64, 
 	}
 
 	return pid, nil
-} // done
+}
 
 func (s *PostService) UpdatePost(post dto.PostDto) error {
 	// check user ouwnership
@@ -110,7 +111,7 @@ func (s *PostService) GetPost(postId int64) (dto.PostDto, error) {
 		Dislike:   post.Dislike,
 		Categorys: cat,
 	}, nil
-} // fix
+}
 
 func (s *PostService) GetAllPosts() ([]dto.PostDto, error) {
 	list, err := s.repo.GetAllPosts()
@@ -126,7 +127,7 @@ func (s *PostService) GetAllPosts() ([]dto.PostDto, error) {
 	}
 
 	return listDto, nil
-} // checked // fix
+}
 
 func (s *PostService) GetAllPostsByUserID(userId int64) ([]dto.PostDto, error) {
 	list, err := s.repo.GetPostByUserID(userId)
@@ -147,7 +148,7 @@ func (s *PostService) GetAllPostsByUserID(userId int64) ([]dto.PostDto, error) {
 func (s *PostService) GetAllPostsByCategory(catId int64) ([]dto.PostDto, error) {
 	list, err := s.repo.GetPostByCategory(catId)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	var listDto []dto.PostDto
@@ -170,13 +171,29 @@ func (s *PostService) GetAllPostsByLike(t string) ([]dto.PostDto, error) {
 	}
 
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	var listDto []dto.PostDto
 
 	for _, p := range list {
 		dto := dto.GetPostDto(p, dto.UserDto{}, models.PostLike{}, nil) // FIX
+		listDto = append(listDto, dto)
+	}
+
+	return listDto, nil
+}
+
+func (s *PostService) GetAllPostsByDate() ([]dto.PostDto, error) {
+	list, err := s.repo.GetPostsByDate()
+	if err != nil {
+		return nil, err
+	}
+
+	var listDto []dto.PostDto
+
+	for _, p := range list {
+		dto := dto.GetPostDto(p, dto.UserDto{}, models.PostLike{}, nil)
 		listDto = append(listDto, dto)
 	}
 

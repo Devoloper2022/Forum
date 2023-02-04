@@ -26,6 +26,7 @@ const (
 	urlFilterCategory = "/filter/category/"
 	urlFilterLike     = "/filter/like"
 	urlFilterDislike  = "/filter/dislike"
+	urlFilterDate     = "/filter/date"
 
 	// user
 	urlUser = "/user/"
@@ -77,8 +78,9 @@ func (h *Handler) Routes() *http.ServeMux {
 	mux.HandleFunc(urlPostDislike, m.chain(h.DislikePost)) // for owner
 
 	mux.HandleFunc(urlFilterCategory, m.chain(h.ListPosts))      // for all
-	mux.HandleFunc(urlFilterDislike, m.chain(h.ListPostsByLike)) // for all
-	mux.HandleFunc(urlFilterLike, m.chain(h.ListPostsByLike))    // for all
+	mux.HandleFunc(urlFilterDislike, m.chain(h.ListPostsByLike)) // for auth
+	mux.HandleFunc(urlFilterLike, m.chain(h.ListPostsByLike))    // for auth
+	mux.HandleFunc(urlFilterDate, m.chain(h.ListPostsByDate))    // for auth
 
 	// comment
 	// mux.HandleFunc(urlComment, m.chain(h.GetPost))             // for all

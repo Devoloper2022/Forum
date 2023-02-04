@@ -321,3 +321,53 @@ func (h *Handler) DislikePost(w http.ResponseWriter, r *http.Request) {
 		h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
 	}
 }
+
+func (h *Handler) ListPostsByDate(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(key).(models.User)
+	if user == (models.User{}) {
+		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+		return
+	}
+
+	if r.URL.Path != urlFilterDate {
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+		return
+	}
+
+	if r.Method != "GET" {
+		h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
+		return
+	}
+
+	files := []string{
+		"./ui/templates/index.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+
+	categories, err := h.services.GetAllCategories()
+	if err != nil {
+		h.errorHandler(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	posts, err := h.services.Post.GetAllPostsByDate()
+	if err != nil {
+		h.errorHandler(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err = ts.Execute(w, dto.Index{
+		List: categories,
+		Post: posts,
+	})
+
+	if err != nil {
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+}

@@ -14,6 +14,7 @@ type Post interface {
 	GetPostsByMostLikes() ([]models.Post, error)
 	GetPostsByLeastLikes() ([]models.Post, error)
 	GetPostByCategory(category int64) ([]models.Post, error)
+	GetPostsByDate() ([]models.Post, error)
 }
 
 // main functions
@@ -165,6 +166,37 @@ func (r *Database) GetPostsByMostLikes() ([]models.Post, error) {
 
 func (r *Database) GetPostsByLeastLikes() ([]models.Post, error) {
 	query := ("SELECT *  from posts WHERE Dislike > 0 ORDER BY Dislike DESC,Like ASC")
+	st, err := r.db.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	defer st.Close()
+
+	rows, err := st.Query()
+	if err != nil {
+		return nil, err
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var posts []models.Post
+	for rows.Next() {
+		var post models.Post
+		if err := rows.Scan(&post.ID, &post.Title, &post.Text, &post.Date, &post.Like, &post.Dislike, &post.UserID); err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
+func (r *Database) GetPostsByDate() ([]models.Post, error) {
+	query := ("SELECT *  from posts ORDER BY Date  ASC")
 	st, err := r.db.Prepare(query)
 	if err != nil {
 		return nil, err
