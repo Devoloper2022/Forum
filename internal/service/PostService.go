@@ -38,12 +38,9 @@ func NewPostService(repo repository.Post, categories repository.Category, user r
 }
 
 func (s *PostService) CreatePost(post dto.PostDto, categories []string) (int64, error) {
-	t := time.Now()
-
 	newPost := models.Post{
 		Title:   post.Title,
 		Text:    post.Text,
-		Date:    t,
 		Like:    0,
 		Dislike: 0,
 		UserID:  post.User.ID,
