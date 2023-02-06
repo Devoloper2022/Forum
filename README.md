@@ -67,9 +67,6 @@ Docker
 For the forum project you must use Docker. You can read about docker basics in the ascii-art-web-dockerize subject.
 
 
-**Authors**
-------
-
 
 **Usage**
 go run cmd/main.go
