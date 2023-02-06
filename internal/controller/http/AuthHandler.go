@@ -1,19 +1,15 @@
 package http
 
 import (
-	"fmt"
 	dto "forum/internal/DTO"
 	"forum/internal/models"
 	"html/template"
-	"log"
 	"net/http"
+	"strings"
+	"time"
 )
 
 func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value(key).(models.User)
-	if user != (models.User{}) {
-		return
-	}
 	if r.URL.Path != urlHome {
 		h.notFound(w)
 		return
@@ -25,95 +21,138 @@ func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+	categories, err := h.services.GetAllCategories()
+	if err != nil {
+		h.errorHandler(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	posts, err := h.services.GetAllPosts()
 	if err != nil {
-		h.errorLog.Println(err.Error())
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	err = ts.Execute(w, posts)
+	err = ts.Execute(w, dto.Index{
+		List: categories,
+		Post: posts,
+	})
 	if err != nil {
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
-
-	w.Write([]byte("home page"))
 }
 
 func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(key).(models.User)
+	if user != (models.User{}) {
+		http.Redirect(w, r, urlHome, http.StatusSeeOther)
+		return
+	}
 	if r.URL.Path != urlSignUP {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 
 	if r.Method == "GET" {
 		ts, err := template.ParseFiles("./ui/templates/signUp.html")
 		if err != nil {
-			log.Printf("Create Post: Execute:%v", err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 
 		err = ts.Execute(w, nil)
 		if err != nil {
-			h.serverError(w, err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 	} else if r.Method == "POST" {
-		email := r.PostFormValue("email")
-		username := r.PostFormValue("username")
-		pass := r.PostFormValue("password")
-		repass := r.PostFormValue("repassw")
 
-		if email == "" || username == "" || pass == "" || repass == "" || repass != pass {
-			h.clientError(w, 400)
+		err := r.ParseForm()
+		if err != nil {
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 
-		err := h.services.CreateUser(models.User{
+		email := r.PostFormValue("email")
+		email = strings.ReplaceAll(email, " ", "")
+
+		username := r.PostFormValue("username")
+		username = strings.ReplaceAll(username, " ", "")
+
+		pass := r.PostFormValue("password")
+		pass = strings.ReplaceAll(pass, " ", "")
+
+		repass := r.PostFormValue("repassw")
+		repass = strings.ReplaceAll(repass, " ", "")
+
+		if email == "" || username == "" || pass == "" || repass == "" || repass != pass {
+			h.errorHandler(w, http.StatusBadRequest, "Not valid input ")
+			return
+		}
+
+		err = h.services.CreateUser(models.User{
 			Username: username,
 			Email:    email,
 			Password: pass,
 		})
 		if err != nil {
-			h.serverError(w, err)
+			if err == dto.ErrEmailExist || err == dto.ErrUsernameExist || err == dto.ErrPasswdNotMatch || err == dto.ErrEmailInvalid {
+				h.errorHandler(w, http.StatusConflict, http.StatusText(http.StatusConflict))
+				return
+			}
+
+			h.errorHandler(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		http.Redirect(w, r, fmt.Sprintf(urlSignIn), http.StatusSeeOther)
+		http.Redirect(w, r, urlSignIn, http.StatusSeeOther)
 
 	} else {
-		log.Println("Create Post: Method not allowed")
 		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
+		h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
 	}
 }
 
 func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(key).(models.User)
+	if user != (models.User{}) {
+		http.Redirect(w, r, urlHome, http.StatusSeeOther)
+		return
+	}
 	if r.URL.Path != urlSignIn {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 	if r.Method == "GET" {
 		ts, err := template.ParseFiles("./ui/templates/signIn.html")
 		if err != nil {
-			log.Printf("Create Post: Execute:%v", err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 
 		err = ts.Execute(w, nil)
 		if err != nil {
-			h.serverError(w, err)
+			h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 	} else if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
+			return
+		}
+
 		email := r.PostFormValue("email")
+		email = strings.ReplaceAll(email, " ", "")
+
 		pass := r.PostFormValue("password")
+		pass = strings.ReplaceAll(pass, " ", "")
 
 		if email == "" || pass == "" {
-			h.clientError(w, 400)
+			h.errorHandler(w, http.StatusBadRequest, "Not valid input ")
 			return
 		}
 
@@ -122,7 +161,16 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 			Password: pass,
 		})
 		if err != nil {
-			h.clientError(w, 400)
+			if err == dto.ErrUserNotFound {
+				h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+				return
+			}
+
+			if err == dto.ErrPasswdNotMatch {
+				h.errorHandler(w, http.StatusConflict, http.StatusText(http.StatusConflict))
+				return
+			}
+			h.errorHandler(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -133,11 +181,11 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 			Path:    urlHome,
 		})
 
-		http.Redirect(w, r, fmt.Sprintf(urlHome), http.StatusSeeOther)
+		http.Redirect(w, r, urlHome, http.StatusSeeOther)
 
 	} else {
-		log.Println("Create Post: Method not allowed")
 		h.errorLog.Println(http.StatusText(http.StatusMethodNotAllowed))
+		h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
 	}
 }
 
@@ -151,9 +199,37 @@ func (h *Handler) Refresh(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(key).(models.User)
+	if user == (models.User{}) {
+		h.errorHandler(w, http.StatusBadRequest, "can't log-out,without log-in")
+		return
+	}
+
 	if r.URL.Path != urlLogout {
 		h.notFound(w)
 		return
 	}
-	w.Write([]byte("Logout page"))
+
+	if r.Method != "POST" {
+		token, err := r.Cookie("token")
+		if err != nil {
+			if err == http.ErrNoCookie {
+				h.errorHandler(w, http.StatusUnauthorized, http.StatusText(http.StatusUnauthorized))
+				return
+			}
+		}
+		err = h.services.DeleteToken(token.Value)
+		if err != nil {
+			h.errorHandler(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		c := &http.Cookie{
+			Name:    "token",
+			Value:   "",
+			Path:    "/",
+			Expires: time.Now(),
+		}
+		http.SetCookie(w, c)
+		http.Redirect(w, r, urlHome, http.StatusSeeOther)
+	}
 }

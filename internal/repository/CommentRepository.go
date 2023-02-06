@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"forum/internal/models"
 )
 
@@ -20,7 +19,7 @@ func (r *Database) CreateComment(comment models.Comment) error {
 	defer st.Close()
 
 	if err != nil {
-		return fmt.Errorf("repository : create Comment : %w", err)
+		return err
 	}
 
 	_, err = st.Exec(comment.Text, comment.Date, comment.Like, comment.Dislike, comment.UserID, comment.PostID)
@@ -36,7 +35,7 @@ func (r *Database) GetComment(commentID int64) (models.Comment, error) {
 	defer st.Close()
 
 	if err != nil {
-		return models.Comment{}, fmt.Errorf("repository : Get Post  checker 1: %w", err)
+		return models.Comment{}, err
 	}
 
 	row := st.QueryRow(commentID)
@@ -53,11 +52,11 @@ func (r *Database) UpdateComment(comment models.Comment) error {
 	defer st.Close()
 
 	if err != nil {
-		return fmt.Errorf("\nrepository : Update Post  checker 1\n: %w", err)
+		return err
 	}
 	_, err = st.Query(comment.Text, comment.Like, comment.Dislike, comment.ID)
 	if err != nil {
-		return fmt.Errorf("\nrepository : Update Post  checker 1\n: %w", err)
+		return err
 	}
 	return nil
 }
@@ -68,7 +67,7 @@ func (r *Database) DeleteComment(commentID int64) error {
 	defer st.Close()
 
 	if err != nil {
-		return fmt.Errorf("repository : Delete Token  checker 1: %w", err)
+		return err
 	}
 
 	_, err = st.Exec(commentID)
@@ -83,22 +82,22 @@ func (r *Database) GetAllCommentByPostID(postId int64) ([]models.Comment, error)
 	query := ("SELECT * FROM comments WHERE PostID = ?")
 	st, err := r.db.Prepare(query)
 	if err != nil {
-		return nil, fmt.Errorf("\nrepository : Get Post by UserID  checker 1:\n %w", err)
+		return nil, err
 	}
 	defer st.Close()
 	rows, err := st.Query(postId)
 	if err != nil {
-		return nil, fmt.Errorf("\nrepository : Get Post by UserID  checker 2\n: %w", err)
+		return nil, err
 	}
 	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("\nrepository : Get Post by UserID  checker 3\n: %w", err)
+		return nil, err
 	}
 	defer rows.Close()
 	var comments []models.Comment
 	for rows.Next() {
 		var comment models.Comment
 		if err != rows.Scan(&comment.ID, &comment.Text, &comment.Date, &comment.Like, &comment.Dislike, &comment.UserID, &comment.PostID) {
-			return nil, fmt.Errorf("\n repository : Get Post by UserID  checker 4\n: %w", err)
+			return nil, err
 		}
 		comments = append(comments, comment)
 	}
@@ -109,22 +108,22 @@ func (r *Database) GetAllCommentByUserID(userId int64) ([]models.Comment, error)
 	query := ("SELECT * FROM comments WHERE UserID = ?")
 	st, err := r.db.Prepare(query)
 	if err != nil {
-		return nil, fmt.Errorf("\nrepository : Get Post by UserID  checker 1:\n %w", err)
+		return nil, err
 	}
 	defer st.Close()
 	rows, err := st.Query(userId)
 	if err != nil {
-		return nil, fmt.Errorf("\nrepository : Get Post by UserID  checker 2\n: %w", err)
+		return nil, err
 	}
 	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("\nrepository : Get Post by UserID  checker 3\n: %w", err)
+		return nil, err
 	}
 	defer rows.Close()
 	var comments []models.Comment
 	for rows.Next() {
 		var comment models.Comment
 		if err != rows.Scan(&comment.ID, &comment.Text, &comment.Date, &comment.UserID, &comment.PostID) {
-			return nil, fmt.Errorf("\n repository : Get Post by UserID  checker 4\n: %w", err)
+			return nil, err
 		}
 		comments = append(comments, comment)
 	}

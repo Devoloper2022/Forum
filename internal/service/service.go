@@ -13,15 +13,17 @@ type Service struct {
 	User
 	Comment
 	Like
+	LikePost
 }
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Autorization: NewAuthService(repos.Autorization, repos.User),
-		Post:         NewPostService(repos.Post, repos.Category, repos.User),
+		Post:         NewPostService(repos.Post, repos.Category, repos.User, repos.LikePost),
 		Category:     NewCategoryService(repos.Category),
 		User:         NewUserService(repos.User),
 		Comment:      NewCommentService(repos.Comment, repos.User),
-		Like:         NewLikeService(repos.Like, repos.Comment, repos.Post),
+		Like:         NewLikeService(repos.LikeComment, repos.Comment),
+		LikePost:     NewLikePostService(repos.LikePost, repos.Post),
 	}
 }

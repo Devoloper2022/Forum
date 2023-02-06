@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"forum/internal/models"
 )
 
@@ -16,7 +15,7 @@ type Category interface {
 func (r *Database) GetAllCategories() ([]models.Category, error) {
 	rows, err := r.db.Query("SELECT * FROM categories")
 	if err != nil {
-		return []models.Category{}, fmt.Errorf("repository : GetAllCategories: %w", err)
+		return []models.Category{}, err
 	}
 	var categoryList []models.Category
 	for rows.Next() {
@@ -38,13 +37,13 @@ func (r *Database) CreatePostCategory(postId int64, categories []int64) error {
 	defer st.Close()
 
 	if err != nil {
-		return fmt.Errorf("repository : create PostCategory  checker 1: %w", err)
+		return err
 	}
 
 	for _, cid := range categories {
 		_, err = st.Exec(postId, cid)
 		if err != nil {
-			return fmt.Errorf("repository : create PostCategory checker 3: %w", err)
+			return err
 		}
 	}
 	return nil
@@ -72,25 +71,25 @@ func (r *Database) GetAllCategoriesByPostId(postId int64) ([]models.Category, er
 	defer st.Close()
 
 	if err != nil {
-		return nil, fmt.Errorf("\nrepository : Get All Categories By PostId  checker 1:\n %w", err)
+		return nil, err
 	}
 
 	rows, err := st.Query(postId)
 	defer rows.Close()
 
 	if err != nil {
-		return nil, fmt.Errorf("\nrepository : Get All Categories By PostId  checker 2\n: %w", err)
+		return nil, err
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("\nrepository : Get All Categories By PostId  checker 3\n: %w", err)
+		return nil, err
 	}
 
 	var list []models.Category
 	for rows.Next() {
 		var cat models.Category
 		if err != rows.Scan(&cat.ID, &cat.Title) {
-			return nil, fmt.Errorf("\n repository : Get All Categories By PostId  checker 4\n: %w", err)
+			return nil, err
 		}
 		list = append(list, cat)
 	}

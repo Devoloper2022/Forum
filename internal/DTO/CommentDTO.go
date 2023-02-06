@@ -3,14 +3,14 @@ package dto
 import "forum/internal/models"
 
 type CommentDto struct {
-	ID      int64          `json:"id"`
-	Text    string         `json:"text"`
-	Date    string         `json:"date"`
-	Like    int64          `json:"like"`
-	Dislike int64          `json:"dislike"`
-	User    UserDto        `json:"userId"`
-	PostID  int64          `json:"postId"`
-	Likes   CommentLikeDto `json:"likes"`
+	ID      int64              `json:"id"`
+	Text    string             `json:"text"`
+	Date    string             `json:"date"`
+	Like    int64              `json:"like"`
+	Dislike int64              `json:"dislike"`
+	User    UserDto            `json:"userId"`
+	PostID  int64              `json:"postId"`
+	Likes   models.CommentLike `json:"likes"`
 }
 
 func (dto *CommentDto) GetCommentModel() models.Comment {
@@ -25,7 +25,7 @@ func (dto *CommentDto) GetCommentModel() models.Comment {
 	}
 }
 
-func GetCommentDto(m models.Comment, u UserDto, l CommentLikeDto) CommentDto {
+func GetCommentDto(m models.Comment, u UserDto, l models.CommentLike) CommentDto {
 	return CommentDto{
 		ID:      m.ID,
 		Text:    m.Text,

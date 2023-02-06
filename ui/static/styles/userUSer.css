@@ -1,0 +1,17 @@
+body {
+  background-color: #333333;
+  color: aliceblue;
+  border: 1px solid lawngreen;
+  border-radius: 12px;
+
+  width: max-content;
+  margin: 0 auto;
+  margin-top: 50px;
+}
+h1 {
+}
+.logo_text {
+}
+.start {
+  margin: 20px;
+}

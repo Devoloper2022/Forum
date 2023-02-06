@@ -6,44 +6,65 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum</title>
-    <link rel="stylesheet" href="../static/style/style.css" type="text/css">
+    <link rel="stylesheet" href="../static/styles/style.css" type="text/css">
+   
 </head>
 
 <body>
-    <header>
+    <div>
         <ul class="ulHeader">
             <li><a href="/">Home</a></li>
             <li><a href="/post/create">New Posts</a></li>
-            <li><a href="/post/all">All Post</a></li>
-            <li style="float:right"><a href="about.asp">Exit</a></li>
-            <li style="float:right"><a href="/signup">Sign Up</a></li>
-            <li style="float:right"><a href="/signin">Sign In</a></li>
+            <li><a href="/filter/like">Popular</a></li>
+            <li><a href="/filter/dislike">Bad case</a></li>
+            <li><a href="/filter/date">NEW</a></li>
+            <li style="float:right"><a href="/logout">Exit</a></li>
+            <li style="float:right"><a href="/signup" class="sign">Sign Up</a></li>
+            <li style="float:right"><a href="/signin" class="sign">Sign In</a></li>
+
         </ul>
-    </header>
+
+    </div>
+
+
+
     <div class="wrapper">
         <div class="Navbar">
+
             <ul class="ulNavbar">
-                <li class="checked">{{range . }}</li>
-                <li>Rust</li>
-                <li>JavaScript</li>
-                <li>Flutter</li>
-                <li>Unity</li>
+                {{range .List}}
+                <a href="/filter/category?id={{ .ID}}">
+
+                    <li>
+                        {{ .Title }}
+                    </li>
+                </a>
+                {{end}}
             </ul>
+
         </div>
 
 
         <div class="container">
             <div>
-                <h1 class="title">Pasts</h1>
+                <h1 class="title">Posts</h1>
             </div>
 
             <div class="grid-container">
-                {{range .}}
+                {{range .Post}}
                 <div class="card">
+
                     <a href="/post?id={{ .ID}}">
 
                         <h1>
-                            {{ .Title }}
+
+                            TItle: {{ .Title }}
+                        </h1>
+                    </a>
+                    <a href="/post?id={{ .ID}}">
+
+                        <h1>
+                            Post: {{ .Text }}
                         </h1>
                     </a>
                 </div>
@@ -52,15 +73,147 @@
             </div>
         </div>
     </div>
-    <script>
 
-        var list = document.querySelector('ul');
+    <style>
+        body {
+            background-color: #333;
+        }
+
+        .wrapper {
+            display: grid;
+            grid-template-columns: 2fr 10fr;
+
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: green;
+
+        }
+
+        .ulNavbar {
+            display: block;
+            position: fixed;
+            height: 100%;
+            width: 15%;
+            background-color: white;
+        }
+
+        .ulNavbar li {
+            color: green;
+            padding: 10px;
+            background-color: white;
+
+
+            cursor: pointer;
+            position: relative;
+            padding: 12px 8px 12px 40px;
+            /* background: #eee;
+    font-size: 18px; */
+            transition: 0.2s;
+
+            /* make the list items unselectable */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .ulHeader li {
+            float: left;
+            border-right: 1px solid #bbb;
+        }
+
+
+        .ulNavbar li:nth-child(odd) {
+            background: #f9f9f9;
+        }
+
+        /* Darker background-color on hover */
+        .ulNavbar li:hover {
+            background: #ddd;
+        }
+
+        /* When clicked on, add a background color and strike out text */
+        .ulNavbar li.checked {
+            background: #888;
+            color: #fff;
+
+        }
+
+        /* Add a "checked" mark when clicked on */
+        .ulNavbar li.checked::before {
+            content: '';
+            position: absolute;
+            border-color: #fff;
+            border-style: solid;
+            border-width: 0 2px 2px 0;
+            top: 10px;
+            left: 16px;
+            transform: rotate(45deg);
+            height: 15px;
+            width: 7px;
+        }
+
+
+        li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 19px;
+            text-decoration: none;
+        }
+
+        /* Change the link color to #111 (black) on hover */
+        li a:hover {
+            background-color: rgb(7, 104, 7);
+        }
+
+        .active {
+            background-color: #111;
+        }
+
+        .container {
+            color: white;
+        }
+
+        .grid-container {
+            /* background-color: green; */
+            color: white;
+            text-decoration: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-row-gap: 1em;
+            margin: 10px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            border: 1px solid white;
+            border-radius: 20px;
+            padding: 20px;
+            background-color: green;
+        }
+    </style>
+    <!-- <script>
+
+        var list = document.querySelector('ulNavbar');
         list.addEventListener('click', function (ev) {
-            if (ev.target.tagName === 'LI') {
+            if (ev.target.tagName === 'li') {
                 ev.target.classList.toggle('checked');
             }
         }, false);
-    </script>
+    </script> -->
 </body>
 
 </html>

@@ -1,43 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CreatePost | Forum</title>
-    <link rel="stylesheet" href="./post.css" type="text/css">
-</head>
-<body>
-
-    <h1>all Post</h1>
-
-
+    <link rel="stylesheet" href="../../static/style/userProfile.css" />
+  </head>
+  <body>
+    <h1 class="title">all Post</h1>
 
     <div>
-        <div>
-            <a href="/post/update"><button disabled>Update</button></a>
-            <a href="/post/delete"><button disabled>Delete</button></a>
+      <div>
+        <a href="/post/update"><button disabled>Update</button></a>
+        <a href="/post/delete"><button disabled>Delete</button></a>
+      </div>
+      <div class="info">
+        <div class="left">
+          <h1 class="logo_text">Title: {{ .Title }}</h1>
+          <h1 class="logo_text">Text: {{ .Text }}</h1>
+          <h1 class="logo_text">Date: {{ .Date}}</h1>
         </div>
-        <h1 class="logo_text">Title: {{ .Title }}</h1>
-        <h1 class="logo_text">Text: {{ .Text }}</h1>
-        <h1 class="logo_text">Date: {{ .Date}}</h1>
-        <h1 class="logo_text">Like: {{ .Like }}</h1>
-        <h1 class="logo_text">Dislike: {{ .Dislike}}</h1>
-        <h1 class="logo_text">Author:  <a href="/user?id={{ .User.ID}}" >  {{ .User.Username}}</a></h1>
-        <h1 class="logo_text" style="text-align: center">Label:</h1>
-        
-        {{range .Categorys}}
-        <div>
-            <h2 class="logo_text"> <a href="/user?id={{ .ID}}" >  {{ .Title }}</a></h2>
-            <h2 class="logo_text"></h2>
-        </div>
-        
-        {{end}}        
-       
+        <dvi class="right">
+          <h1 class="logo_text">Like: {{ .Like }}</h1>
+          <h1 class="logo_text">Dislike: {{ .Dislike}}</h1>
+          <h1 class="logo_text">
+            Author: <a href="/user?id={{ .User.ID}}"> {{ .User.Username}}</a>
+          </h1>
+        </dvi>
+      </div>
+
+      <h1 class="logo_text" style="text-align: center">Label:</h1>
+
+      {{range .Categorys}}
+      <div class="list">
+        <h2 class="logo_text"><a href="/user?id={{ .ID}}"> {{ .Title }}</a></h2>
+      </div>
+
+      {{end}}
     </div>
-
-
-
-
-</body>
+  </body>
 </html>

@@ -20,7 +20,8 @@ type Repository struct {
 	Category
 	User
 	Comment
-	Like
+	LikePost
+	LikeComment
 }
 
 func NewRepository(db *sql.DB) *Repository {
@@ -30,6 +31,7 @@ func NewRepository(db *sql.DB) *Repository {
 		Category:     NewDatabase(db),
 		User:         NewDatabase(db),
 		Comment:      NewDatabase(db),
-		Like:         NewDatabase(db),
+		LikePost:     NewDatabase(db),
+		LikeComment:  NewDatabase(db),
 	}
 }

@@ -18,12 +18,14 @@ type Comment interface {
 type CommentService struct {
 	repo repository.Comment
 	user repository.User
+	// like repository.Like
 }
 
 func NewCommentService(repo repository.Comment, user repository.User) *CommentService {
 	return &CommentService{
 		repo: repo,
 		user: user,
+		// like: like,
 	}
 }
 
@@ -59,8 +61,9 @@ func (s *CommentService) GetAllCommentsByPostId(postID int64) ([]dto.CommentDto,
 		if err != nil {
 			return nil, err
 		}
+
 		dtoUser := dto.GetUserDto(user)
-		dtoComment := dto.GetCommentDto(m, dtoUser, dto.CommentLikeDto{})
+		dtoComment := dto.GetCommentDto(m, dtoUser, models.CommentLike{})
 		dtoList = append(dtoList, dtoComment)
 	}
 

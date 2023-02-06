@@ -24,7 +24,7 @@ const (
 			ID INTEGER PRIMARY KEY AUTOINCREMENT,
 			Title TEXT NOT NULL,
 			Text TEXT,
-			Date TEXT,
+			Date DATE DEFAULT (datetime('now','localtime')),
 			Like INTEGER,
 			Dislike INTEGER,
 			UserID INTEGER,

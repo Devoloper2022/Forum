@@ -1,0 +1,37 @@
+body {
+  background-color: #333;
+  color: aliceblue;
+  width: 900px;
+  margin: 0 auto;
+  margin-top: 100px;
+  border: 1px solid greenyellow;
+  padding: 30px;
+  border-radius: 15px;
+}
+.title {
+  text-align: center;
+  font-size: 50px;
+  margin-top: 0;
+}
+button {
+  background-color: forestgreen;
+  color: aliceblue;
+  padding: 15px;
+  border-radius: 15px;
+  border: none;
+  margin-right: 20px;
+  font-size: 20px;
+  cursor: pointer;
+}
+a {
+  text-decoration: none;
+  color: aliceblue;
+}
+
+h2 {
+  margin-left: 30px;
+}
+.info {
+  display: flex;
+  justify-content: space-between;
+}

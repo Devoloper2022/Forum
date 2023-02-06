@@ -1,40 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CreatePost | Forum</title>
-    <link rel="stylesheet" href="./post.css" type="text/css">
-</head>
-<body>
-
+    <link
+      rel="stylesheet"
+      href="../../static/styles/comments.css"
+      type="text/css"
+    />
+  </head>
+  <body>
     <h1>all Comments</h1>
 
+    <div>
+      <div class="grid-container">
+        {{range .}}
+        <div class="card">
+          <h1 class="logo_text">Text: {{ .Text }}</h1>
+          <h1 class="logo_text">Date: {{ .Date}}</h1>
+          <h1 class="logo_text">Like: <button>{{ .Like }}</button></h1>
+          <form method="POST" action="/comment/like">
+            <input type="hidden" name="postId" value="{{.PostID}}" />
+            <input type="hidden" name="commentId" value="{{.ID}}" />
+            <input type="hidden" name="id" value="{{.Likes.ID}}" />
+            <button type="submit" class="button-23">Like</button>
+          </form>
 
+          <h1 class="logo_text">Dislike: <button>{{ .Dislike}}</button></h1>
 
-    <div> 
-   
-        
-        
-        <div class="grid-container">
-            {{range .}}
-            <div class="card">
-               
-        <h1 class="logo_text">Text: {{ .Text }}</h1>
-        <h1 class="logo_text">Date: {{ .Date}}</h1>
-        <h1 class="logo_text">Like: {{ .Like }}</h1>
-        <h1 class="logo_text">Dislike: {{ .Dislike}}</h1>
-        <h1 class="logo_text">Author:  <a href="/user?id={{ .User.ID}}" >  {{ .User.Username}}</a></h1><br>
-            </div>
-            {{end}}
-            
+          <form method="POST" action="/comment/dislike">
+            <input type="hidden" name="postId" value="{{.PostID}}" />
+            <input type="hidden" name="commentId" value="{{.ID}}" />
+            <input type="hidden" name="id" value="{{.Likes.ID}}" />
+            <button type="submit" class="button-23">Dislike</button>
+          </form>
+          <h1 class="logo_text">
+            Author: <a href="/user?id={{ .User.ID}}"> {{ .User.Username}}</a>
+          </h1>
+          <br />
         </div>
-       
+        <div class="card">
+          <h1 class="logo_text">Text: {{ .Text }}</h1>
+          <h1 class="logo_text">Date: {{ .Date}}</h1>
+          <h1 class="logo_text">Like: <button>{{ .Like }}</button></h1>
+          <form method="POST" action="/comment/like">
+            <input type="hidden" name="postId" value="{{.PostID}}" />
+            <input type="hidden" name="commentId" value="{{.ID}}" />
+            <input type="hidden" name="id" value="{{.Likes.ID}}" />
+            <button type="submit" class="button-23">Like</button>
+          </form>
+
+          <h1 class="logo_text">Dislike: <button>{{ .Dislike}}</button></h1>
+
+          <form method="POST" action="/comment/dislike">
+            <input type="hidden" name="postId" value="{{.PostID}}" />
+            <input type="hidden" name="commentId" value="{{.ID}}" />
+            <input type="hidden" name="id" value="{{.Likes.ID}}" />
+            <button type="submit" class="button-23">Dislike</button>
+          </form>
+          <h1 class="logo_text">
+            Author: <a href="/user?id={{ .User.ID}}"> {{ .User.Username}}</a>
+          </h1>
+          <br />
+        </div>
+        {{end}}
+      </div>
     </div>
-
-
-
-
-</body>
+  </body>
 </html>
