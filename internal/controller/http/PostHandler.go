@@ -1,6 +1,8 @@
 package http
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	dto "forum/internal/DTO"
 	"forum/internal/models"
@@ -85,12 +87,16 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 
 	if err != nil || id < 1 {
-		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+		h.errorHandler(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 		return
 	}
 
 	ts, err := template.ParseFiles("./ui/templates/post/post.html")
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+			return
+		}
 		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}

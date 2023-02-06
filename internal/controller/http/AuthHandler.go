@@ -99,6 +99,11 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 			Password: pass,
 		})
 		if err != nil {
+			if err == dto.ErrEmailExist || err == dto.ErrUsernameExist || err == dto.ErrPasswdNotMatch || err == dto.ErrEmailInvalid {
+				h.errorHandler(w, http.StatusConflict, http.StatusText(http.StatusConflict))
+				return
+			}
+
 			h.errorHandler(w, http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -156,6 +161,15 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 			Password: pass,
 		})
 		if err != nil {
+			if err == dto.ErrUserNotFound {
+				h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+				return
+			}
+
+			if err == dto.ErrPasswdNotMatch {
+				h.errorHandler(w, http.StatusConflict, http.StatusText(http.StatusConflict))
+				return
+			}
 			h.errorHandler(w, http.StatusBadRequest, err.Error())
 			return
 		}

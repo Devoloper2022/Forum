@@ -31,12 +31,14 @@ func NewAuthService(auth repository.Autorization, user repository.User) *AuthSer
 }
 
 func (s *AuthService) GenerateToken(login dto.Credentials) (dto.Cook, error) {
-	var user models.User
 	validEmail, err := regexp.MatchString(mailValidation, login.Username)
-
 	if err != nil {
 		return dto.Cook{}, err
-	} else if validEmail {
+	}
+
+	var user models.User
+
+	if validEmail {
 		user, err = s.user.GetUserByEmail(login.Username)
 
 		if err != nil {

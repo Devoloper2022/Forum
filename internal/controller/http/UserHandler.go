@@ -1,45 +1,49 @@
 package http
 
 import (
+	"database/sql"
+	"errors"
 	"html/template"
-	"log"
 	"net/http"
 	"strconv"
 )
 
 func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != urlUser {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 	if r.Method != "GET" {
-		h.clientError(w, 400)
+		h.errorHandler(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
 		return
 	}
 
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 
 	if err != nil || id < 1 {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 		return
 	}
 
 	ts, err := template.ParseFiles("./ui/templates/user/user.html")
 	if err != nil {
-		log.Printf("Get Post: Execute:%v", err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 
 	user, err := h.services.User.Get(int64(id))
 	if err != nil {
-		h.errorLog.Println(err.Error())
-		h.serverError(w, err)
+		if errors.Is(err, sql.ErrNoRows) {
+			h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+			return
+		}
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 
 	err = ts.Execute(w, user)
 	if err != nil {
-		h.serverError(w, err)
+		h.errorHandler(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 }

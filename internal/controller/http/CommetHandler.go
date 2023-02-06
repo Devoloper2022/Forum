@@ -1,6 +1,8 @@
 package http
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	dto "forum/internal/DTO"
 	"forum/internal/models"
@@ -76,7 +78,7 @@ func (h *Handler) ListComments(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 
 	if err != nil || id < 1 {
-		h.notFound(w)
+		h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 
@@ -92,6 +94,10 @@ func (h *Handler) ListComments(w http.ResponseWriter, r *http.Request) {
 
 	comments, err := h.services.Comment.GetAllCommentsByPostId(int64(id))
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			h.errorHandler(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+			return
+		}
 		h.errorHandler(w, http.StatusInternalServerError, err.Error())
 		return
 	}
